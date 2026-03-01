@@ -14,30 +14,30 @@ fun runLabDemonstration() {
     // 1. Виклик статичного методу (f)
     println(Pet.getAppInfo())
 
-    // 2. Створення об'єктів (a, d)
+    // 2. створення об'єктів (a, d)
     val myDog = Dog(1, "Barsik", 3, 12.5, "German Shepherd", true)
     val mysteryPet = Parrot(2, "Kesha", 1, 0.5, null, 25.0) // breed = null для (i)
 
-    // 3. Додавання в Singleton (g)
+    // 3. додавання в Singleton (g)
     PetManager.addPet(myDog)
     PetManager.addPet(mysteryPet)
 
-    // 4. Перевірка Nullable та Elvis (i)
+    // 4. перевірка Nullable та Elvis (i)
     println(myDog.getDetails())
     println(mysteryPet.getDetails())
 
-    // 5. Використання Extension-функцій (j)
+    // 5. використання Extension-функції (j)
     if (myDog.name.isValidName()) {
         println("Weight in grams: ${myDog.getWeightInGrams()}")
     }
 
-    // 6. Робота з Reminder та перевантаженням (b, c)
-    val foodReminder = Reminder("Feeding") // Вторинний конструктор
-    foodReminder.postpone(2) // Перевантажений метод
+    // 6. робота з Reminder та перевантаженням (b, c)
+    val foodReminder = Reminder("Feeding") // вторинний конструктор
+    foodReminder.postpone(2) // перевантажений метод
     foodReminder.setHighPriority() // Extension для Reminder
     PetManager.addReminder(foodReminder)
 
-    // 7. Використання лямбди (k)
+    // 7. використання лямбди (k)
     val birds = PetManager.filterPets { it.type == PetType.BIRD }
     println("Found ${birds.size} birds in the system.")
 }

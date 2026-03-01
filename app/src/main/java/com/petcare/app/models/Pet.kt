@@ -1,8 +1,15 @@
 package com.petcare.app.models
 
-import com.petcare.app.models.PetType
-
-open class Pet(var id: Int, var name: String, var type: PetType, var age: Int, var weight: Double = 0.0, var breed: String? = null) {
+open class Pet(
+    var id: Int,
+    var name: String,
+    var type: PetType,
+    var age: Int,
+    var weight: Double = 0.0,
+    var breed: String? = null,
+    val imageResId: Int? = null,
+    val summary: String = ""
+) {
     open fun makeSound(): String {
         return "Animal sounds"
     }

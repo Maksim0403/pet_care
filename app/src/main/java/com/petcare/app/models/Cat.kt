@@ -1,17 +1,17 @@
 package com.petcare.app.models
 
-class Dog(
+class Cat(
     id: Int,
     name: String,
     age: Int,
     weight: Double,
     breed: String?,
-    var isTrained: Boolean,
     imageResId: Int? = null,
     summary: String = ""
-) : Pet(id, name, PetType.MAMMAL, age, weight, breed, imageResId, summary) {
+) :
+    Pet(id, name, PetType.MAMMAL, age, weight, breed, imageResId, summary) {
 
     override fun makeSound(): String {
-        return "Woof-woof"
+        return "Meow-meow"
     }
 }

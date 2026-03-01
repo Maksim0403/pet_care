@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.petcare.app.data.animals
 import com.petcare.app.lab_1.runLabDemonstration
 import com.petcare.app.ui.theme.PetCareTheme
 
@@ -30,7 +31,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             PetCareTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    PetProfileScreen(modifier = Modifier.padding(innerPadding))
+                    PetProfileScreen(modifier = Modifier.padding(innerPadding), pet = animals[0])
                 }
             }
         }
