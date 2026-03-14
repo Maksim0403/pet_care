@@ -25,6 +25,10 @@ fun runLabDemonstration() {
     // 4. перевірка Nullable та Elvis (i)
     println(myDog.getDetails())
     println(mysteryPet.getDetails())
+    // safe call
+    mysteryPet.breed?.let {
+        println("Breed found: $it")
+    } ?: println("Breed is not mentioned")
 
     // 5. використання Extension-функції (j)
     if (myDog.name.isValidName()) {

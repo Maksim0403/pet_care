@@ -9,7 +9,7 @@ class Dog(
     var isTrained: Boolean,
     imageResId: Int? = null,
     summary: String = ""
-) : Pet(id, name, PetType.MAMMAL, age, weight, breed, imageResId, summary) {
+) : Pet(id, name, PetType.DOG, age, weight, breed, imageResId, summary) {
 
     override fun makeSound(): String {
         return "Woof-woof"

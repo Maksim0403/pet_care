@@ -8,8 +8,7 @@ class Cat(
     breed: String?,
     imageResId: Int? = null,
     summary: String = ""
-) :
-    Pet(id, name, PetType.MAMMAL, age, weight, breed, imageResId, summary) {
+) :Pet(id, name, PetType.CAT, age, weight, breed, imageResId, summary) {
 
     override fun makeSound(): String {
         return "Meow-meow"
