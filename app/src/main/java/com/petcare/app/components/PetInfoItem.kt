@@ -19,13 +19,13 @@ import androidx.compose.ui.unit.dp
 import com.petcare.app.ui.theme.Typography
 
 @Composable
-fun PetInfoItem(modifier: Modifier = Modifier, title: String, text: String) {
+fun PetInfoItem(modifier: Modifier = Modifier, title: String, text: String, backgroundColor : Color = Color.White) {
     Column(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .border(1.dp, color = Color.Gray, shape = RoundedCornerShape(16.dp))
-            .background(color = Color.White)
+            .background(color = backgroundColor)
             .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

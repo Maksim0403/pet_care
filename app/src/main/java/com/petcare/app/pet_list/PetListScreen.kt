@@ -15,6 +15,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -97,9 +100,15 @@ fun PetListScreen(modifier: Modifier = Modifier, animalList: List<Pet>) {
         }
         Spacer(Modifier.height(10.dp))
         if (isColumn) {
-            LazyColumn(modifier = Modifier.fillMaxSize(), state = rememberLazyListState()) {
-                items(animals.size) { i ->
-                    PetListItem(animals[i])
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                state = rememberLazyListState()
+            ) {
+                items(
+                    items = animals,
+                    key = { it.id }
+                ) { pet ->
+                    PetListItem(pet)
                 }
             }
         } else {
@@ -108,10 +117,14 @@ fun PetListScreen(modifier: Modifier = Modifier, animalList: List<Pet>) {
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                state = rememberLazyGridState()
             ) {
-                items(animals.size) { i ->
-                    PetGridItem(animals[i])
+                items(
+                    items = animals,
+                    key = { it.id }
+                ) { pet ->
+                    PetGridItem(pet)
                 }
             }
         }

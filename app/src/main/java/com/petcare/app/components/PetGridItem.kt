@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.petcare.app.R
 import com.petcare.app.models.Cat
 import com.petcare.app.models.Pet
+import com.petcare.app.ui.theme.ColorPrimaryLight
 
 @Composable
 internal fun PetGridItem(animal: Pet) {
@@ -31,13 +32,13 @@ internal fun PetGridItem(animal: Pet) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        PetImage(modifier = Modifier.padding(vertical = 10.dp), animal.imageResId ?: 0, size = 100)
+        PetImage(modifier = Modifier.padding(vertical = 10.dp), animal.imageResId ?: 0, size = 150)
         Column(modifier = Modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
             PetTitle(animal.name, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
             Column(modifier = Modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                PetInfoItem(modifier = Modifier, title = "Age", text = "${animal.age} years")
-                PetInfoItem(modifier = Modifier, title = "Weight", text = "${animal.weight} kg")
-                PetInfoItem(modifier = Modifier, title = "Breed", text = "${animal.breed}")
+                PetInfoItem(modifier = Modifier, title = "Age", text = "${animal.age} years", backgroundColor = ColorPrimaryLight)
+                PetInfoItem(modifier = Modifier, title = "Weight", text = "${animal.weight} kg", backgroundColor = ColorPrimaryLight)
+                PetInfoItem(modifier = Modifier, title = "Breed", text = "${animal.breed}", backgroundColor = ColorPrimaryLight)
             }
         }
 
