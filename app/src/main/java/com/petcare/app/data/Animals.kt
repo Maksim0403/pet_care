@@ -4,8 +4,9 @@ import com.petcare.app.R
 import com.petcare.app.models.Cat
 import com.petcare.app.models.Dog
 import com.petcare.app.models.Parrot
+import com.petcare.app.models.Pet
 
-internal val animals = listOf(
+internal var animals = mutableListOf<Pet>(
     Cat(
         id = 1,
         name = "Tom",

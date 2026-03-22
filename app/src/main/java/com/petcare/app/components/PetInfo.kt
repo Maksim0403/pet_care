@@ -21,7 +21,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.petcare.app.R
-import com.petcare.app.data.animals
 import com.petcare.app.models.Cat
 import com.petcare.app.models.Pet
 import com.petcare.app.ui.theme.Typography
@@ -64,20 +63,25 @@ fun PetInfo(modifier: Modifier = Modifier, pet: Pet) {
         Text(text = pet.summary, style = Typography.bodyMedium, color = Color.DarkGray)
         Spacer(Modifier.height(16.dp))
 
-        PetButton()
+        PetButton(
+            title = "Contact",
+            onCloseClicked = {}
+        )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun PetInfoPreview() {
-    PetInfo(pet =  Cat(
-        id = 1,
-        name = "Tom",
-        age = 5,
-        weight = 3.5,
-        breed = "Tabby",
-        imageResId = R.drawable.cat,
-        summary = "Tabby cats are common domestic cats known for their striped coat patterns and playful personality."
-    ),)
+    PetInfo(
+        pet = Cat(
+            id = 1,
+            name = "Tom",
+            age = 5,
+            weight = 3.5,
+            breed = "Tabby",
+            imageResId = R.drawable.cat,
+            summary = "Tabby cats are common domestic cats known for their striped coat patterns and playful personality."
+        ),
+    )
 }

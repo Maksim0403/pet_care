@@ -15,6 +15,7 @@ import com.petcare.app.data.animals
 import com.petcare.app.lab_1.runLabDemonstration
 import com.petcare.app.pet_list.PetListScreen
 import com.petcare.app.ui.theme.PetCareTheme
+
 //(animals.map { it.type }.distinct().toMutableList().apply { add( 0, PetType.ALL) }.toList())
 //val selected = PetType.CAT;(animals.map { it.type }.distinct().toMutableList().apply { add( 0, PetType.ALL) }.toList())
 class MainActivity : ComponentActivity() {
@@ -28,7 +29,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             PetCareTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    val pets by remember{mutableStateOf(animals) }
+                    val pets by remember { mutableStateOf(animals) }
                     PetListScreen(modifier = Modifier.padding(innerPadding), pets)
                 }
             }
