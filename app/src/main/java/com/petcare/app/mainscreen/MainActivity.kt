@@ -11,8 +11,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.rememberNavController
 import com.petcare.app.data.animals
 import com.petcare.app.lab_1.runLabDemonstration
+import com.petcare.app.navigation.NavGraph
 import com.petcare.app.pet_list.PetListScreen
 import com.petcare.app.ui.theme.PetCareTheme
 
@@ -27,12 +29,28 @@ class MainActivity : ComponentActivity() {
         runLabDemonstration()
 
         setContent {
+            val navController     = rememberNavController()
+            val hasSeenOnboarding = false // swap with DataStore/SharedPrefs read
+
+            PetCareTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    val pets by remember { mutableStateOf(animals) }
+                    NavGraph(
+                        navController = navController,
+                        modifier = Modifier.padding(innerPadding),
+                        animals =pets,
+                        hasSeenOnboarding = hasSeenOnboarding,
+                    )
+                }
+            }
+        }
+        /*setContent {
             PetCareTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     val pets by remember { mutableStateOf(animals) }
                     PetListScreen(modifier = Modifier.padding(innerPadding), pets)
                 }
             }
-        }
+        }*/
     }
 }

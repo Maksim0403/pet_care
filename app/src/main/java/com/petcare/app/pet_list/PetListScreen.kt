@@ -1,6 +1,5 @@
 package com.petcare.app.pet_list
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.petcare.app.R
@@ -48,11 +49,16 @@ import com.petcare.app.data.animals
 import com.petcare.app.models.Pet
 import com.petcare.app.models.PetType
 import com.petcare.app.ui.theme.ButtonColor
+import com.petcare.app.ui.theme.ButtonDisabledColor
 import com.petcare.app.ui.theme.ColorBackground
 import kotlinx.coroutines.delay
 
 @Composable
-fun PetListScreen(modifier: Modifier = Modifier, animalList: MutableList<Pet>) {
+fun PetListScreen(
+    modifier: Modifier = Modifier,
+    animalList: MutableList<Pet>,
+    onPetClicked: (Pet) -> Unit
+) {
     var isLoading by remember { mutableStateOf(true) }
     var showAddNewPet by remember { mutableStateOf(false) }
     var pets by remember { mutableStateOf(animalList) }
@@ -76,6 +82,8 @@ fun PetListScreen(modifier: Modifier = Modifier, animalList: MutableList<Pet>) {
             onCloseClicked = { showAddNewPet = false }
         )
 
+        pets.isEmpty() -> EmptyPets(addNewPetClicked = { showAddNewPet = true })
+
         else -> Content(
             modifier = modifier,
             animalList = pets,
@@ -83,7 +91,7 @@ fun PetListScreen(modifier: Modifier = Modifier, animalList: MutableList<Pet>) {
                 showAddNewPet = true
             }, onRemovePetClicked = { pet ->
                 pets = pets.toMutableList().also { it.remove(pet) }
-            })
+            }, onPetClicked = { onPetClicked })
 
     }
 }
@@ -102,11 +110,32 @@ private fun Loading(modifier: Modifier = Modifier) {
 }
 
 @Composable
+private fun EmptyPets(modifier: Modifier = Modifier, addNewPetClicked: () -> Unit) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(color = ColorBackground)
+            .padding(10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        PetHeader(text = "There are no pets in the list", Modifier, textAlign = TextAlign.Center)
+        Spacer(modifier = Modifier.height(16.dp))
+        PetTitle(text = "Add first Pet", textAlign = TextAlign.Center, modifier = Modifier
+            .fillMaxWidth()
+            .background(color = ButtonDisabledColor, shape = RoundedCornerShape(10.dp))
+            .padding(horizontal = 16.dp, vertical = 10.dp)
+            .clickable {addNewPetClicked()})
+    }
+}
+
+@Composable
 private fun Content(
     modifier: Modifier = Modifier,
     animalList: List<Pet>,
     addNewPetClicked: () -> Unit,
     onRemovePetClicked: (Pet) -> Unit,
+    onPetClicked: (Pet) -> Unit,
 ) {
 
     Box(
@@ -123,9 +152,9 @@ private fun Content(
             var isColumn by remember { mutableStateOf(true) }
 
             val options by remember(animalList) {
-                mutableStateOf(
+                derivedStateOf {
                     listOf(PetType.ALL) + animalList.map { it.type }.toSet()
-                )
+                }
             }
 
             var selectedOption by remember { mutableStateOf(options[0]) }
@@ -140,6 +169,10 @@ private fun Content(
                 petsGroupedMap[selectedOption] ?: emptyList()
             }
 
+            val petCountText by remember(animals.size) {
+                mutableStateOf(if (animals.size == 1) "There is only one pet" else " Pets in the list: ${animals.size}")
+            }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -152,7 +185,8 @@ private fun Content(
                     isColumn = !isColumn
                 })
             }
-
+            Spacer(Modifier.height(10.dp))
+            PetTitle(text = petCountText, modifier = Modifier)
 
             Spacer(Modifier.height(10.dp))
             LazyRow(
@@ -180,7 +214,10 @@ private fun Content(
                         items = animals,
                         key = { it.id }
                     ) { pet ->
-                        PetListItem(animal = pet, onRemoveClicked = { onRemovePetClicked(pet) })
+                        PetListItem(
+                            animal = pet,
+                            onRemoveClicked = { onRemovePetClicked(pet) },
+                            onClick = { onPetClicked })
                     }
                 }
             } else {
@@ -238,7 +275,11 @@ private fun AddNewPetButton(modifier: Modifier = Modifier, onClick: () -> Unit) 
 @Preview(showBackground = true)
 @Composable
 private fun PetListScreenPreview() {
-    Content(animalList = animals, addNewPetClicked = {}, onRemovePetClicked = {})
+    Content(
+        animalList = animals,
+        addNewPetClicked = {},
+        onRemovePetClicked = {},
+        onPetClicked = {})
 }
 
 

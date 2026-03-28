@@ -25,8 +25,8 @@ import com.petcare.app.models.Pet
 import com.petcare.app.ui.theme.ColorPrimaryLight
 
 @Composable
-internal fun PetListItem(animal: Pet, onRemoveClicked: () -> Unit) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+internal fun PetListItem(animal: Pet, onRemoveClicked: () -> Unit, onClick: () -> Unit) {
+    Column(modifier = Modifier.fillMaxWidth().clickable{onClick()}) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -105,6 +105,6 @@ private fun PetListItemPreview() {
             breed = "Tabby",
             imageResId = R.drawable.cat,
             summary = "Tabby cats are common domestic cats known for their striped coat patterns and playful personality."
-        ), {}
+        ), {},{}
     )
 }

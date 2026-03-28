@@ -11,14 +11,14 @@ import com.petcare.app.ui.theme.Typography
 
 @Composable
 internal fun PetHeader(
-    text: String, modifier: Modifier
+    text: String, modifier: Modifier, textAlign:TextAlign = TextAlign.Start
 ) {
     Text(
         text = text,
         style = Typography.displaySmall,
         color = Color.Black,
         fontWeight = FontWeight(500),
-        textAlign = TextAlign.Start,
+        textAlign = textAlign,
         modifier = modifier
     )
 }
