@@ -23,7 +23,11 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -39,7 +43,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.petcare.app.R
-import com.petcare.app.components.AddNewPetScreen
 import com.petcare.app.components.PetGridItem
 import com.petcare.app.components.PetHeader
 import com.petcare.app.components.PetListItem
@@ -48,6 +51,7 @@ import com.petcare.app.components.PetTypeOption
 import com.petcare.app.data.animals
 import com.petcare.app.models.Pet
 import com.petcare.app.models.PetType
+import com.petcare.app.models.SortOrder
 import com.petcare.app.ui.theme.ButtonColor
 import com.petcare.app.ui.theme.ButtonDisabledColor
 import com.petcare.app.ui.theme.ColorBackground
@@ -56,42 +60,32 @@ import kotlinx.coroutines.delay
 @Composable
 fun PetListScreen(
     modifier: Modifier = Modifier,
-    animalList: MutableList<Pet>,
+    animalList: List<Pet>,
+    isLoading: Boolean,
+    isColumn: Boolean,
+    onPetAddClicked: () -> Unit,
+    onPetRemoved: (Pet) -> Unit,
     onPetClicked: (Pet) -> Unit
 ) {
     var isLoading by remember { mutableStateOf(true) }
-    var showAddNewPet by remember { mutableStateOf(false) }
-    var pets by remember { mutableStateOf(animalList) }
 
     LaunchedEffect(Unit) {
-        if (isLoading) {
-            delay(2500)
-            isLoading = false
-        }
+        delay(1000)
+        isLoading = false
     }
 
     when {
         isLoading -> Loading()
-        showAddNewPet -> AddNewPetScreen(
-            modifier = Modifier,
-            animalsSize = pets.size,
-            onAnimalAdded = { pet ->
-                pets.add(pet)
-                showAddNewPet = false
-            },
-            onCloseClicked = { showAddNewPet = false }
-        )
-
-        pets.isEmpty() -> EmptyPets(addNewPetClicked = { showAddNewPet = true })
-
+        animalList.isEmpty() -> EmptyPets(addNewPetClicked = { onPetAddClicked() })
         else -> Content(
             modifier = modifier,
-            animalList = pets,
+            animalList = animalList,
+            isColumn = isColumn,
             addNewPetClicked = {
-                showAddNewPet = true
+                onPetAddClicked()
             }, onRemovePetClicked = { pet ->
-                pets = pets.toMutableList().also { it.remove(pet) }
-            }, onPetClicked = { onPetClicked })
+                onPetRemoved(pet)
+            }, onPetClicked = { pet -> onPetClicked(pet) })
 
     }
 }
@@ -121,11 +115,12 @@ private fun EmptyPets(modifier: Modifier = Modifier, addNewPetClicked: () -> Uni
     ) {
         PetHeader(text = "There are no pets in the list", Modifier, textAlign = TextAlign.Center)
         Spacer(modifier = Modifier.height(16.dp))
-        PetTitle(text = "Add first Pet", textAlign = TextAlign.Center, modifier = Modifier
-            .fillMaxWidth()
-            .background(color = ButtonDisabledColor, shape = RoundedCornerShape(10.dp))
-            .padding(horizontal = 16.dp, vertical = 10.dp)
-            .clickable {addNewPetClicked()})
+        PetTitle(
+            text = "Add first Pet", textAlign = TextAlign.Center, modifier = Modifier
+                .fillMaxWidth()
+                .background(color = ButtonDisabledColor, shape = RoundedCornerShape(10.dp))
+                .padding(horizontal = 16.dp, vertical = 10.dp)
+                .clickable { addNewPetClicked() })
     }
 }
 
@@ -133,6 +128,7 @@ private fun EmptyPets(modifier: Modifier = Modifier, addNewPetClicked: () -> Uni
 private fun Content(
     modifier: Modifier = Modifier,
     animalList: List<Pet>,
+    isColumn: Boolean,
     addNewPetClicked: () -> Unit,
     onRemovePetClicked: (Pet) -> Unit,
     onPetClicked: (Pet) -> Unit,
@@ -149,7 +145,6 @@ private fun Content(
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            var isColumn by remember { mutableStateOf(true) }
 
             val options by remember(animalList) {
                 derivedStateOf {
@@ -163,14 +158,24 @@ private fun Content(
                 animalList.groupBy { it.type }
             }
 
-            val animals = if (selectedOption == PetType.ALL) {
-                animalList
-            } else {
-                petsGroupedMap[selectedOption] ?: emptyList()
+            var sortOrder by remember { mutableStateOf(SortOrder.NONE) }
+            var filterExpanded by remember { mutableStateOf(false) }
+
+            val animals by remember(animalList, selectedOption, sortOrder) {
+                derivedStateOf {
+                    val filtered = if (selectedOption == PetType.ALL) animalList
+                    else petsGroupedMap[selectedOption] ?: emptyList()
+                    when (sortOrder) {
+                        SortOrder.NONE -> filtered
+                        SortOrder.NAME -> filtered.sortedBy { it.name }
+                        SortOrder.AGE -> filtered.sortedBy { it.age }
+                        SortOrder.WEIGHT -> filtered.sortedBy { it.weight }
+                    }
+                }
             }
 
             val petCountText by remember(animals.size) {
-                mutableStateOf(if (animals.size == 1) "There is only one pet" else " Pets in the list: ${animals.size}")
+                mutableStateOf(if (animals.size == 3) "There are 3 pets in the list" else " Pets in the list: ${animals.size}")
             }
 
             Row(
@@ -179,11 +184,7 @@ private fun Content(
                 verticalAlignment = Alignment.CenterVertically
 
             ) {
-                val title = if (isColumn) "List" else "Grid"
                 PetHeader(text = "Animals", Modifier)
-                PetTitle(text = title, modifier = Modifier.clickable {
-                    isColumn = !isColumn
-                })
             }
             Spacer(Modifier.height(10.dp))
             PetTitle(text = petCountText, modifier = Modifier)
@@ -205,6 +206,34 @@ private fun Content(
                 }
             }
             Spacer(Modifier.height(10.dp))
+
+            Box {
+                Button(onClick = { filterExpanded = true }) {
+                    Text(text = "Sort: ${sortOrder.name}", modifier = Modifier.fillMaxWidth())
+                }
+                DropdownMenu(
+                    expanded = filterExpanded,
+                    onDismissRequest = { filterExpanded = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("None") },
+                        onClick = { sortOrder = SortOrder.NONE; filterExpanded = false }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("By Name") },
+                        onClick = { sortOrder = SortOrder.NAME; filterExpanded = false }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("By Age") },
+                        onClick = { sortOrder = SortOrder.AGE; filterExpanded = false }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("By Weight") },
+                        onClick = { sortOrder = SortOrder.WEIGHT; filterExpanded = false }
+                    )
+                }
+            }
+            Spacer(Modifier.height(10.dp))
             if (isColumn) {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
@@ -217,7 +246,7 @@ private fun Content(
                         PetListItem(
                             animal = pet,
                             onRemoveClicked = { onRemovePetClicked(pet) },
-                            onClick = { onPetClicked })
+                            onClick = { onPetClicked(pet) })
                     }
                 }
             } else {
@@ -233,7 +262,10 @@ private fun Content(
                         items = animals,
                         key = { it.id }
                     ) { pet ->
-                        PetGridItem(animal = pet, onRemoveClicked = { onRemovePetClicked(pet) })
+                        PetGridItem(
+                            animal = pet,
+                            onRemoveClicked = { onRemovePetClicked(pet) },
+                            onClick = { onPetClicked(pet) })
                     }
                 }
             }
@@ -278,6 +310,7 @@ private fun PetListScreenPreview() {
     Content(
         animalList = animals,
         addNewPetClicked = {},
+        isColumn = true,
         onRemovePetClicked = {},
         onPetClicked = {})
 }

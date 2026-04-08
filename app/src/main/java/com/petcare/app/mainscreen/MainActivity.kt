@@ -4,22 +4,32 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.petcare.app.data.animals
 import com.petcare.app.lab_1.runLabDemonstration
+import com.petcare.app.models.Pet
+import com.petcare.app.navigation.BottomNavItem
 import com.petcare.app.navigation.NavGraph
-import com.petcare.app.pet_list.PetListScreen
+import com.petcare.app.ui.theme.ButtonColor
+import com.petcare.app.ui.theme.ButtonDisabledColor
+import com.petcare.app.ui.theme.ColorPrimary
+import com.petcare.app.ui.theme.ColorPrimaryLight
 import com.petcare.app.ui.theme.PetCareTheme
 
-//(animals.map { it.type }.distinct().toMutableList().apply { add( 0, PetType.ALL) }.toList())
-//val selected = PetType.CAT;(animals.map { it.type }.distinct().toMutableList().apply { add( 0, PetType.ALL) }.toList())
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,28 +39,69 @@ class MainActivity : ComponentActivity() {
         runLabDemonstration()
 
         setContent {
-            val navController     = rememberNavController()
-            val hasSeenOnboarding = false // swap with DataStore/SharedPrefs read
+            var pets by remember { mutableStateOf<List<Pet>>(animals) }
+
+            val navController = rememberNavController()
+
+            val backStackEntry by navController.currentBackStackEntryAsState()
+            val currentRoute = backStackEntry?.destination?.route
+
+            val items = listOf(
+                BottomNavItem.PetList,
+                BottomNavItem.PetGrid,
+                BottomNavItem.Profile
+            )
+
+            val showBottomBar = items.any { it.screen.route == currentRoute }
 
             PetCareTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    val pets by remember { mutableStateOf(animals) }
+                Scaffold(
+                    bottomBar = {
+                        if (showBottomBar) {
+                            NavigationBar(
+                                containerColor = ColorPrimary,
+                                contentColor = ColorPrimaryLight
+                            ) {
+                                items.forEach { item ->
+                                    NavigationBarItem(
+                                        selected = currentRoute == item.screen.route,
+                                        onClick = {
+                                            navController.navigate(item.screen.route) {
+                                                popUpTo(navController.graph.startDestinationId) {
+                                                    saveState = true
+                                                }
+                                                launchSingleTop = true
+                                                restoreState = true
+                                            }
+                                        },
+                                        icon = { Icon(item.icon, contentDescription = item.label) },
+                                        label = { Text(item.label) },
+                                        colors = NavigationBarItemDefaults.colors(
+                                            selectedIconColor = ButtonColor,
+                                            unselectedIconColor = ButtonDisabledColor,
+                                            selectedTextColor = Color.Black,
+                                            unselectedTextColor = Color.Gray,
+                                            indicatorColor = Color.Blue.copy(alpha = 0.1f)
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    }
+                ) { innerPadding ->
                     NavGraph(
                         navController = navController,
                         modifier = Modifier.padding(innerPadding),
-                        animals =pets,
-                        hasSeenOnboarding = hasSeenOnboarding,
+                        animals = pets,
+                        onPetAdded = { pet ->
+                            pets = pets.toMutableList().also { it.add(0, pet) }
+                        },
+                        onPetRemoved = { pet ->
+                            pets = pets.toMutableList().also { it.remove(pet) }
+                        },
                     )
                 }
             }
         }
-        /*setContent {
-            PetCareTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    val pets by remember { mutableStateOf(animals) }
-                    PetListScreen(modifier = Modifier.padding(innerPadding), pets)
-                }
-            }
-        }*/
     }
 }

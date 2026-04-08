@@ -1,5 +1,7 @@
 package com.petcare.app.models
 
+import java.io.Serializable
+
 open class Pet(
     var id: Int,
     var name: String,
@@ -9,7 +11,7 @@ open class Pet(
     var breed: String? = null,
     val imageResId: Int? = null,
     val summary: String = ""
-) {
+) : Serializable {
     open fun makeSound(): String {
         return "Animal sounds"
     }

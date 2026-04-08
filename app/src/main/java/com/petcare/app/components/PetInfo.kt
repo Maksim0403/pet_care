@@ -65,7 +65,7 @@ fun PetInfo(modifier: Modifier = Modifier, pet: Pet) {
 
         PetButton(
             title = "Contact",
-            onCloseClicked = {}
+            onClicked = {}
         )
     }
 }

@@ -24,13 +24,14 @@ import com.petcare.app.models.Pet
 import com.petcare.app.ui.theme.ColorPrimaryLight
 
 @Composable
-internal fun PetGridItem(animal: Pet, onRemoveClicked: () -> Unit) {
+internal fun PetGridItem(animal: Pet, onRemoveClicked: () -> Unit, onClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White, shape = RoundedCornerShape(10.dp))
             .border(width = 1.dp, color = Color.DarkGray, shape = RoundedCornerShape(10.dp))
-            .padding(10.dp),
+            .padding(10.dp)
+            .clickable{onClick()},
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -97,6 +98,6 @@ private fun PetGridItemPreview() {
             breed = "Tabby",
             imageResId = R.drawable.cat,
             summary = "Tabby cats are common domestic cats known for their striped coat patterns and playful personality."
-        ), onRemoveClicked = {}
+        ), onRemoveClicked = {}, onClick = {}
     )
 }

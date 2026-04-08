@@ -1,4 +1,4 @@
-package com.petcare.app.components
+package com.petcare.app.add_new_pet
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -52,7 +52,7 @@ internal fun AddNewPetScreen(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Spacer(Modifier.height(16.dp))
-        PetHeader(text = "Add new pet", Modifier)
+        _root_ide_package_.com.petcare.app.components.PetHeader(text = "Add new pet", Modifier)
         val petOptions = listOf(
             PetType.CAT,
             PetType.DOG,
@@ -73,7 +73,7 @@ internal fun AddNewPetScreen(
             )
         }
 
-        PetImage(
+        _root_ide_package_.com.petcare.app.components.PetImage(
             modifier = Modifier
                 .padding(horizontal = 10.dp)
                 .align(Alignment.CenterHorizontally),
@@ -104,21 +104,21 @@ internal fun AddNewPetScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        PetTextField(
+        _root_ide_package_.com.petcare.app.components.PetTextField(
             text = petName,
             title = "Name",
             keyboardType = KeyboardType.Text,
             onTextChange = { petName = it })
-        PetTextField(
+        _root_ide_package_.com.petcare.app.components.PetTextField(
             text = petAge,
             title = "Age",
             keyboardType = KeyboardType.Number,
             onTextChange = { petAge = it })
 
-        PetButton(
+        _root_ide_package_.com.petcare.app.components.PetButton(
             title = "Add Pet",
             color = ButtonColor,
-            onCloseClicked = {
+            onClicked = {
                 val newPet =
                     createPet(
                         name = petName,
@@ -131,10 +131,10 @@ internal fun AddNewPetScreen(
             }
         )
 
-        PetButton(
+        _root_ide_package_.com.petcare.app.components.PetButton(
             title = "Close",
             color = ButtonDisabledColor,
-            onCloseClicked = { onCloseClicked() }
+            onClicked = { onCloseClicked() }
         )
     }
 }
