@@ -92,13 +92,8 @@ class MainActivity : ComponentActivity() {
                     NavGraph(
                         navController = navController,
                         modifier = Modifier.padding(innerPadding),
-                        animals = pets,
                         onPetAdded = { pet ->
                             PetRepository.addPet(pet)
-                            pets = PetRepository.getAllPets()
-                        },
-                        onPetRemoved = { pet ->
-                            PetRepository.removePet(pet)
                             pets = PetRepository.getAllPets()
                         },
                     )

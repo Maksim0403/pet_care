@@ -64,7 +64,6 @@ fun PetListScreen(
     modifier: Modifier = Modifier,
     isColumn: Boolean,
     onPetAddClicked: () -> Unit,
-    onPetRemoved: (Pet) -> Unit,
     onPetClicked: (Pet) -> Unit
 ) {
     val viewModel = viewModel<PetListViewModel>()
@@ -82,7 +81,6 @@ fun PetListScreen(
                 onPetAddClicked()
             }, onRemovePetClicked = { pet ->
                 viewModel.removePet(pet)
-                onPetRemoved(pet)
             }, onPetClicked = { pet -> onPetClicked(pet) })
 
     }

@@ -26,9 +26,7 @@ import kotlinx.coroutines.delay
 fun NavGraph(
     navController: NavHostController,
     modifier: Modifier,
-    animals: List<Pet>,
     onPetAdded: (Pet) -> Unit,
-    onPetRemoved: (Pet) -> Unit,
 ) {
     var isLoading by remember { mutableStateOf(true) }
     var name by remember { mutableStateOf("") }
@@ -61,9 +59,6 @@ fun NavGraph(
                 onPetAddClicked = {
                     navController.navigate(Screen.AddNewPet.route)
                 },
-                onPetRemoved = { pet ->
-                    // handled in ViewModel
-                },
                 onPetClicked = { pet ->
                     navController.navigate(Screen.PetDetail.createRoute(pet.id))
                 }
@@ -87,9 +82,6 @@ fun NavGraph(
                 onPetAddClicked = {
                     navController.navigate(Screen.AddNewPet.route)
                 },
-                onPetRemoved = { pet ->
-                    // handled in ViewModel
-                },
                 onPetClicked = { pet ->
                     navController.navigate(Screen.PetDetail.createRoute(pet.id))
                 }
@@ -100,14 +92,10 @@ fun NavGraph(
             route = Screen.PetDetail.route,
             arguments = listOf(navArgument("petId") { type = NavType.IntType })
         ) { backStackEntry ->
-            val petId = backStackEntry.arguments?.getInt("petId")
-            val pet = PetRepository.getPetById(petId)
-
-            pet?.let {
-                PetProfileScreen(modifier, it, onBackClicked = {
-                    navController.popBackStack()
-                })
-            }
+            val petId = backStackEntry.arguments?.getInt("petId") ?: 0
+            PetProfileScreen(modifier, petId, onBackClicked = {
+                navController.popBackStack()
+            })
         }
 
         composable(Screen.Profile.route) {
