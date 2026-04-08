@@ -35,6 +35,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -48,7 +50,7 @@ import com.petcare.app.components.PetHeader
 import com.petcare.app.components.PetListItem
 import com.petcare.app.components.PetTitle
 import com.petcare.app.components.PetTypeOption
-import com.petcare.app.data.animals
+import com.petcare.app.data.PetRepository
 import com.petcare.app.models.Pet
 import com.petcare.app.models.PetType
 import com.petcare.app.models.SortOrder
@@ -60,30 +62,26 @@ import kotlinx.coroutines.delay
 @Composable
 fun PetListScreen(
     modifier: Modifier = Modifier,
-    animalList: List<Pet>,
-    isLoading: Boolean,
     isColumn: Boolean,
     onPetAddClicked: () -> Unit,
     onPetRemoved: (Pet) -> Unit,
     onPetClicked: (Pet) -> Unit
 ) {
-    var isLoading by remember { mutableStateOf(true) }
-
-    LaunchedEffect(Unit) {
-        delay(1000)
-        isLoading = false
-    }
+    val viewModel = viewModel<PetListViewModel>()
+    val pets by viewModel.filteredPets.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
     when {
         isLoading -> Loading()
-        animalList.isEmpty() -> EmptyPets(addNewPetClicked = { onPetAddClicked() })
+        pets.isEmpty() -> EmptyPets(addNewPetClicked = { onPetAddClicked() })
         else -> Content(
             modifier = modifier,
-            animalList = animalList,
+            pets = pets,
             isColumn = isColumn,
             addNewPetClicked = {
                 onPetAddClicked()
             }, onRemovePetClicked = { pet ->
+                viewModel.removePet(pet)
                 onPetRemoved(pet)
             }, onPetClicked = { pet -> onPetClicked(pet) })
 
@@ -127,12 +125,14 @@ private fun EmptyPets(modifier: Modifier = Modifier, addNewPetClicked: () -> Uni
 @Composable
 private fun Content(
     modifier: Modifier = Modifier,
-    animalList: List<Pet>,
+    pets: List<Pet>,
     isColumn: Boolean,
     addNewPetClicked: () -> Unit,
     onRemovePetClicked: (Pet) -> Unit,
     onPetClicked: (Pet) -> Unit,
 ) {
+    val viewModel = viewModel<PetListViewModel>()
+    val allPets by viewModel.allPets.collectAsStateWithLifecycle()
 
     Box(
         modifier = modifier
@@ -146,36 +146,18 @@ private fun Content(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 
-            val options by remember(animalList) {
+            val options by remember(allPets) {
                 derivedStateOf {
-                    listOf(PetType.ALL) + animalList.map { it.type }.toSet()
+                    listOf(PetType.ALL) + allPets.map { it.type }.toSet()
                 }
             }
 
-            var selectedOption by remember { mutableStateOf(options[0]) }
-
-            val petsGroupedMap: Map<PetType, List<Pet>> = remember(animalList) {
-                animalList.groupBy { it.type }
-            }
-
+            var selectedOption by remember { mutableStateOf(PetType.ALL) }
             var sortOrder by remember { mutableStateOf(SortOrder.NONE) }
             var filterExpanded by remember { mutableStateOf(false) }
 
-            val animals by remember(animalList, selectedOption, sortOrder) {
-                derivedStateOf {
-                    val filtered = if (selectedOption == PetType.ALL) animalList
-                    else petsGroupedMap[selectedOption] ?: emptyList()
-                    when (sortOrder) {
-                        SortOrder.NONE -> filtered
-                        SortOrder.NAME -> filtered.sortedBy { it.name }
-                        SortOrder.AGE -> filtered.sortedBy { it.age }
-                        SortOrder.WEIGHT -> filtered.sortedBy { it.weight }
-                    }
-                }
-            }
-
-            val petCountText by remember(animals.size) {
-                mutableStateOf(if (animals.size == 3) "There are 3 pets in the list" else " Pets in the list: ${animals.size}")
+            val petCountText by remember(pets.size) {
+                mutableStateOf(if (pets.size == 3) "There are 3 pets in the list" else " Pets in the list: ${pets.size}")
             }
 
             Row(
@@ -201,6 +183,7 @@ private fun Content(
                         isSelected = selectedOption == options[i],
                         onClick = {
                             selectedOption = options[i]
+                            viewModel.setSelectedType(options[i])
                         }
                     )
                 }
@@ -217,19 +200,19 @@ private fun Content(
                 ) {
                     DropdownMenuItem(
                         text = { Text("None") },
-                        onClick = { sortOrder = SortOrder.NONE; filterExpanded = false }
+                        onClick = { sortOrder = SortOrder.NONE; viewModel.setSortOrder(SortOrder.NONE); filterExpanded = false }
                     )
                     DropdownMenuItem(
                         text = { Text("By Name") },
-                        onClick = { sortOrder = SortOrder.NAME; filterExpanded = false }
+                        onClick = { sortOrder = SortOrder.NAME; viewModel.setSortOrder(SortOrder.NAME); filterExpanded = false }
                     )
                     DropdownMenuItem(
                         text = { Text("By Age") },
-                        onClick = { sortOrder = SortOrder.AGE; filterExpanded = false }
+                        onClick = { sortOrder = SortOrder.AGE; viewModel.setSortOrder(SortOrder.AGE); filterExpanded = false }
                     )
                     DropdownMenuItem(
                         text = { Text("By Weight") },
-                        onClick = { sortOrder = SortOrder.WEIGHT; filterExpanded = false }
+                        onClick = { sortOrder = SortOrder.WEIGHT; viewModel.setSortOrder(SortOrder.WEIGHT); filterExpanded = false }
                     )
                 }
             }
@@ -240,7 +223,7 @@ private fun Content(
                     state = rememberLazyListState()
                 ) {
                     items(
-                        items = animals,
+                        items = pets,
                         key = { it.id }
                     ) { pet ->
                         PetListItem(
@@ -259,7 +242,7 @@ private fun Content(
                     state = rememberLazyGridState()
                 ) {
                     items(
-                        items = animals,
+                        items = pets,
                         key = { it.id }
                     ) { pet ->
                         PetGridItem(
@@ -308,11 +291,9 @@ private fun AddNewPetButton(modifier: Modifier = Modifier, onClick: () -> Unit) 
 @Composable
 private fun PetListScreenPreview() {
     Content(
-        animalList = animals,
+        pets = PetRepository.getAllPets(),
         addNewPetClicked = {},
         isColumn = true,
         onRemovePetClicked = {},
         onPetClicked = {})
 }
-
-

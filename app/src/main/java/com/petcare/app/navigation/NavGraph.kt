@@ -19,6 +19,7 @@ import com.petcare.app.models.Pet
 import com.petcare.app.onboarding.OnBoardingScreen
 import com.petcare.app.pet_list.PetListScreen
 import com.petcare.app.pet_profile.PetProfileScreen
+import com.petcare.app.data.PetRepository
 import kotlinx.coroutines.delay
 
 @Composable
@@ -55,15 +56,13 @@ fun NavGraph(
 
         composable(Screen.PetList.route) {
             PetListScreen(
-                animalList = animals,
                 isColumn = true,
-                isLoading = isLoading,
                 modifier = modifier,
                 onPetAddClicked = {
                     navController.navigate(Screen.AddNewPet.route)
                 },
                 onPetRemoved = { pet ->
-                    onPetRemoved(pet)
+                    // handled in ViewModel
                 },
                 onPetClicked = { pet ->
                     navController.navigate(Screen.PetDetail.createRoute(pet.id))
@@ -74,7 +73,6 @@ fun NavGraph(
         composable(Screen.AddNewPet.route) {
             AddNewPetScreen(
                 modifier = Modifier,
-                animalsSize = animals.size,
                 onAnimalAdded = { pet ->
                     onPetAdded(pet)
                     navController.popBackStack()
@@ -84,15 +82,13 @@ fun NavGraph(
         }
         composable(Screen.PetGrid.route) {
             PetListScreen(
-                animalList = animals,
                 isColumn = false,
-                isLoading = isLoading,
                 modifier = modifier,
                 onPetAddClicked = {
                     navController.navigate(Screen.AddNewPet.route)
                 },
                 onPetRemoved = { pet ->
-                    onPetRemoved(pet)
+                    // handled in ViewModel
                 },
                 onPetClicked = { pet ->
                     navController.navigate(Screen.PetDetail.createRoute(pet.id))
@@ -105,7 +101,7 @@ fun NavGraph(
             arguments = listOf(navArgument("petId") { type = NavType.IntType })
         ) { backStackEntry ->
             val petId = backStackEntry.arguments?.getInt("petId")
-            val pet = animals.find { it.id == petId }
+            val pet = PetRepository.getPetById(petId)
 
             pet?.let {
                 PetProfileScreen(modifier, it, onBackClicked = {

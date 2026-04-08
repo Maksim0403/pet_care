@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.petcare.app.data.animals
+import com.petcare.app.data.PetRepository
 import com.petcare.app.lab_1.runLabDemonstration
 import com.petcare.app.models.Pet
 import com.petcare.app.navigation.BottomNavItem
@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
         runLabDemonstration()
 
         setContent {
-            var pets by remember { mutableStateOf<List<Pet>>(animals) }
+            var pets by remember { mutableStateOf<List<Pet>>(PetRepository.getAllPets()) }
 
             val navController = rememberNavController()
 
@@ -94,10 +94,12 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding),
                         animals = pets,
                         onPetAdded = { pet ->
-                            pets = pets.toMutableList().also { it.add(0, pet) }
+                            PetRepository.addPet(pet)
+                            pets = PetRepository.getAllPets()
                         },
                         onPetRemoved = { pet ->
-                            pets = pets.toMutableList().also { it.remove(pet) }
+                            PetRepository.removePet(pet)
+                            pets = PetRepository.getAllPets()
                         },
                     )
                 }

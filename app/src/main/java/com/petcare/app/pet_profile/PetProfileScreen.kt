@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.petcare.app.components.BackButton
 import com.petcare.app.components.PetImage
 import com.petcare.app.components.PetInfo
-import com.petcare.app.data.animals
+import com.petcare.app.data.PetRepository
 import com.petcare.app.models.Pet
 import com.petcare.app.ui.theme.ColorBackground
 
@@ -42,5 +42,5 @@ fun PetProfileScreen(modifier: Modifier = Modifier, pet: Pet, onBackClicked: () 
 @Preview(showBackground = true)
 @Composable
 private fun PetProfileScreenPreview() {
-    PetProfileScreen(pet = animals[0], onBackClicked = {})
+    PetProfileScreen(pet = PetRepository.getAllPets()[0], onBackClicked = {})
 }

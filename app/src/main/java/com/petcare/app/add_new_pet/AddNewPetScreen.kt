@@ -26,7 +26,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.petcare.app.R
-import com.petcare.app.data.animals
+import com.petcare.app.data.PetRepository
 import com.petcare.app.models.Cat
 import com.petcare.app.models.Dog
 import com.petcare.app.models.Parrot
@@ -40,7 +40,6 @@ import com.petcare.app.ui.theme.ColorBackground
 @Composable
 internal fun AddNewPetScreen(
     modifier: Modifier = Modifier,
-    animalsSize: Int = animals.size,
     onAnimalAdded: (Pet) -> Unit,
     onCloseClicked: () -> Unit
 ) {
@@ -125,7 +124,7 @@ internal fun AddNewPetScreen(
                         age = petAge,
                         imageResId = petImage,
                         petType = selectedPet,
-                        id = animalsSize + 1
+                        id = PetRepository.getNextId()
                     )
                 onAnimalAdded(newPet)
             }
@@ -178,5 +177,5 @@ private fun createPet(name: String, age: String, imageResId: Int, petType: PetTy
 @Preview
 @Composable
 private fun AddNewPetScreenPreview() {
-    AddNewPetScreen(Modifier, 0, {}, {})
+    AddNewPetScreen(Modifier, {}, {})
 }
