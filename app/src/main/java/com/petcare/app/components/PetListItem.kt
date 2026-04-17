@@ -11,10 +11,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import com.petcare.app.R
 import com.petcare.app.models.Cat
 import com.petcare.app.models.Pet
-import com.petcare.app.ui.theme.ColorPrimaryLight
 
 @Composable
 internal fun PetListItem(animal: Pet, onRemoveClicked: () -> Unit, onClick: () -> Unit) {
@@ -30,7 +29,7 @@ internal fun PetListItem(animal: Pet, onRemoveClicked: () -> Unit, onClick: () -
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.surfaceBright)
                 .padding(vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -68,19 +67,19 @@ internal fun PetListItem(animal: Pet, onRemoveClicked: () -> Unit, onClick: () -
                         modifier = Modifier.weight(1f),
                         title = "Age",
                         text = "${animal.age} years",
-                        backgroundColor = ColorPrimaryLight
+                        backgroundColor = MaterialTheme.colorScheme.primaryContainer
                     )
                     PetInfoItem(
                         modifier = Modifier.weight(1f),
                         title = "Weight",
                         text = "${animal.weight} kg",
-                        backgroundColor = ColorPrimaryLight
+                        backgroundColor = MaterialTheme.colorScheme.primaryContainer
                     )
                     PetInfoItem(
                         modifier = Modifier.weight(1f),
                         title = "Breed",
                         text = "${animal.breed}",
-                        backgroundColor = ColorPrimaryLight
+                        backgroundColor = MaterialTheme.colorScheme.primaryContainer
                     )
                 }
 
@@ -88,7 +87,7 @@ internal fun PetListItem(animal: Pet, onRemoveClicked: () -> Unit, onClick: () -
 
 
         }
-        HorizontalDivider(color = Color.DarkGray, modifier = Modifier.height(1.dp))
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, modifier = Modifier.height(2.dp))
     }
 
 }

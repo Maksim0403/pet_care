@@ -41,7 +41,7 @@ class PetListViewModel : ViewModel() {
     private fun loadPets() {
         viewModelScope.launch {
             _isLoading.value = true
-            delay(750) // 0.75 seconds
+            delay(750)
             _isLoading.value = false
         }
     }

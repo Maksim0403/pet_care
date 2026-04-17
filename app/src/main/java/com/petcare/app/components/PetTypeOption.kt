@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -23,14 +24,28 @@ fun PetTypeOption(
     isSelected: Boolean = false,
     onClick: () -> Unit
 ) {
-    val color = if (isSelected) ColorPrimary else ColorBackground
+    val backgroundColor = if (isSelected)
+        MaterialTheme.colorScheme.primaryContainer
+    else
+        MaterialTheme.colorScheme.surfaceVariant
+
+    val textColor = if (isSelected)
+        MaterialTheme.colorScheme.onPrimaryContainer
+    else
+        MaterialTheme.colorScheme.onSurfaceVariant
+
     Box(
-        modifier = Modifier
-            .background(color = color, shape = RoundedCornerShape(10.dp))
-            .border(1.dp, ButtonColor, shape = RoundedCornerShape(10.dp))
+        modifier = modifier
+            .background(color = backgroundColor, shape = RoundedCornerShape(10.dp))
+            .border(1.dp, MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(10.dp))
             .clickable { onClick.invoke() }
     ) {
-        Text(text = text, modifier = Modifier.padding(10.dp), color = Color.Black)
+        Text(
+            text = text,
+            modifier = Modifier.padding(10.dp),
+            color = textColor,
+            style = MaterialTheme.typography.labelMedium
+        )
     }
 }
 

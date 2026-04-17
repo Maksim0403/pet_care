@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,8 +29,8 @@ internal fun PetGridItem(animal: Pet, onRemoveClicked: () -> Unit, onClick: () -
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White, shape = RoundedCornerShape(10.dp))
-            .border(width = 1.dp, color = Color.DarkGray, shape = RoundedCornerShape(10.dp))
+            .background(MaterialTheme.colorScheme.surfaceBright, shape = RoundedCornerShape(10.dp))
+            .border(width = 1.dp, color = MaterialTheme.colorScheme.outlineVariant, shape = RoundedCornerShape(10.dp))
             .padding(10.dp)
             .clickable{onClick()},
         verticalArrangement = Arrangement.Center,
@@ -66,19 +67,19 @@ internal fun PetGridItem(animal: Pet, onRemoveClicked: () -> Unit, onClick: () -
                     modifier = Modifier,
                     title = "Age",
                     text = "${animal.age} years",
-                    backgroundColor = ColorPrimaryLight
+                    backgroundColor = MaterialTheme.colorScheme.primaryContainer
                 )
                 PetInfoItem(
                     modifier = Modifier,
                     title = "Weight",
                     text = "${animal.weight} kg",
-                    backgroundColor = ColorPrimaryLight
+                    backgroundColor = MaterialTheme.colorScheme.primaryContainer
                 )
                 PetInfoItem(
                     modifier = Modifier,
                     title = "Breed",
                     text = "${animal.breed}",
-                    backgroundColor = ColorPrimaryLight
+                    backgroundColor = MaterialTheme.colorScheme.primaryContainer
                 )
             }
         }

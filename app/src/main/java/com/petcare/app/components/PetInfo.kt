@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.petcare.app.R
 import com.petcare.app.models.Cat
 import com.petcare.app.models.Pet
-import com.petcare.app.ui.theme.Typography
+import com.petcare.app.ui.theme.AppTypography
 
 
 @Composable
@@ -32,7 +33,7 @@ fun PetInfo(modifier: Modifier = Modifier, pet: Pet) {
         modifier = modifier
             .fillMaxSize()
             .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
-            .background(color = Color.White)
+            .background(color = MaterialTheme.colorScheme.surface)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -41,7 +42,7 @@ fun PetInfo(modifier: Modifier = Modifier, pet: Pet) {
                 .width(32.dp)
                 .height(4.dp)
                 .clip(RoundedCornerShape(4.dp))
-                .background(Color.Gray)
+                .background(MaterialTheme.colorScheme.outlineVariant)
         )
 
         Spacer(Modifier.height(16.dp))
@@ -60,7 +61,7 @@ fun PetInfo(modifier: Modifier = Modifier, pet: Pet) {
         Spacer(Modifier.height(16.dp))
         PetTitle(text = "Summary", Modifier.fillMaxWidth())
         Spacer(Modifier.height(16.dp))
-        Text(text = pet.summary, style = Typography.bodyMedium, color = Color.DarkGray)
+        Text(text = pet.summary, style = AppTypography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.height(16.dp))
 
         PetButton(

@@ -1,5 +1,6 @@
 package com.petcare.app.enter_name
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,10 +23,6 @@ import androidx.navigation.NavController
 import com.petcare.app.components.PetButton
 import com.petcare.app.components.PetHeader
 import com.petcare.app.components.PetTextField
-import com.petcare.app.ui.theme.ButtonColor
-import com.petcare.app.ui.theme.ButtonDisabledColor
-import com.petcare.app.ui.theme.ColorBackground
-import com.petcare.app.ui.theme.ColorPrimaryLight
 
 @Composable
 internal fun EnterNameScreen(
@@ -34,7 +32,7 @@ internal fun EnterNameScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(color = ColorBackground)
+            .background(color = MaterialTheme.colorScheme.background)
             .padding(10.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
@@ -55,9 +53,9 @@ internal fun EnterNameScreen(
 
         PetButton(
             title = "Submit",
-            color = ButtonColor,
-            disabledColor = ButtonDisabledColor,
-            textColor = ColorPrimaryLight,
+            color = MaterialTheme.colorScheme.primary,
+            disabledColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            textColor = MaterialTheme.colorScheme.onPrimary,
             enabled = nameInput.length > 3,
             onClicked = {
                 navController.previousBackStackEntry
@@ -70,8 +68,11 @@ internal fun EnterNameScreen(
 }
 
 
-@Preview
+@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 private fun EnterNameScreenPreview() {
-    EnterNameScreen(navController = NavController(LocalContext.current))
+    com.petcare.app.ui.theme.PetCareTheme {
+        EnterNameScreen(navController = NavController(LocalContext.current))
+    }
 }

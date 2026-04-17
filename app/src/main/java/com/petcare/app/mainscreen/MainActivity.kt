@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -16,7 +17,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.petcare.app.data.PetRepository
@@ -24,10 +24,6 @@ import com.petcare.app.lab_1.runLabDemonstration
 import com.petcare.app.models.Pet
 import com.petcare.app.navigation.BottomNavItem
 import com.petcare.app.navigation.NavGraph
-import com.petcare.app.ui.theme.ButtonColor
-import com.petcare.app.ui.theme.ButtonDisabledColor
-import com.petcare.app.ui.theme.ColorPrimary
-import com.petcare.app.ui.theme.ColorPrimaryLight
 import com.petcare.app.ui.theme.PetCareTheme
 
 class MainActivity : ComponentActivity() {
@@ -59,8 +55,8 @@ class MainActivity : ComponentActivity() {
                     bottomBar = {
                         if (showBottomBar) {
                             NavigationBar(
-                                containerColor = ColorPrimary,
-                                contentColor = ColorPrimaryLight
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                contentColor = MaterialTheme.colorScheme.onSurface
                             ) {
                                 items.forEach { item ->
                                     NavigationBarItem(
@@ -77,11 +73,11 @@ class MainActivity : ComponentActivity() {
                                         icon = { Icon(item.icon, contentDescription = item.label) },
                                         label = { Text(item.label) },
                                         colors = NavigationBarItemDefaults.colors(
-                                            selectedIconColor = ButtonColor,
-                                            unselectedIconColor = ButtonDisabledColor,
-                                            selectedTextColor = Color.Black,
-                                            unselectedTextColor = Color.Gray,
-                                            indicatorColor = Color.Blue.copy(alpha = 0.1f)
+                                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            selectedTextColor = MaterialTheme.colorScheme.onSurface,
+                                            unselectedTextColor = MaterialTheme.colorScheme.outlineVariant,
+                                            indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
                                         )
                                     )
                                 }

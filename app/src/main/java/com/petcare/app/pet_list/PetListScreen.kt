@@ -1,5 +1,6 @@
 package com.petcare.app.pet_list
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,6 +28,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -54,10 +56,6 @@ import com.petcare.app.data.PetRepository
 import com.petcare.app.models.Pet
 import com.petcare.app.models.PetType
 import com.petcare.app.models.SortOrder
-import com.petcare.app.ui.theme.ButtonColor
-import com.petcare.app.ui.theme.ButtonDisabledColor
-import com.petcare.app.ui.theme.ColorBackground
-import kotlinx.coroutines.delay
 
 @Composable
 fun PetListScreen(
@@ -91,7 +89,7 @@ private fun Loading(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(color = ColorBackground)
+            .background(color = MaterialTheme.colorScheme.background)
             .padding(10.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -104,7 +102,7 @@ private fun EmptyPets(modifier: Modifier = Modifier, addNewPetClicked: () -> Uni
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(color = ColorBackground)
+            .background(color = MaterialTheme.colorScheme.background)
             .padding(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -114,7 +112,7 @@ private fun EmptyPets(modifier: Modifier = Modifier, addNewPetClicked: () -> Uni
         PetTitle(
             text = "Add first Pet", textAlign = TextAlign.Center, modifier = Modifier
                 .fillMaxWidth()
-                .background(color = ButtonDisabledColor, shape = RoundedCornerShape(10.dp))
+                .background(color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f), shape = RoundedCornerShape(10.dp))
                 .padding(horizontal = 16.dp, vertical = 10.dp)
                 .clickable { addNewPetClicked() })
     }
@@ -135,7 +133,7 @@ private fun Content(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(color = ColorBackground)
+            .background(color = MaterialTheme.colorScheme.background)
             .padding(horizontal = 10.dp),
     ) {
         Column(
@@ -267,7 +265,7 @@ private fun AddNewPetButton(modifier: Modifier = Modifier, onClick: () -> Unit) 
     Box(
         modifier = modifier
             .size(48.dp)
-            .background(ButtonColor, shape = RoundedCornerShape(24.dp))
+            .background(MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(24.dp))
             .clickable { onClick() },
         contentAlignment = Alignment.Center,
 
@@ -285,13 +283,16 @@ private fun AddNewPetButton(modifier: Modifier = Modifier, onClick: () -> Unit) 
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 private fun PetListScreenPreview() {
-    Content(
-        pets = PetRepository.getAllPets(),
-        addNewPetClicked = {},
-        isColumn = true,
-        onRemovePetClicked = {},
-        onPetClicked = {})
+    com.petcare.app.ui.theme.PetCareTheme {
+        Content(
+            pets = PetRepository.getAllPets(),
+            addNewPetClicked = {},
+            isColumn = true,
+            onRemovePetClicked = {},
+            onPetClicked = {})
+    }
 }

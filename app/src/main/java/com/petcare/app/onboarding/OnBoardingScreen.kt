@@ -1,5 +1,6 @@
 package com.petcare.app.onboarding
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -25,10 +27,6 @@ import com.petcare.app.components.PetButton
 import com.petcare.app.components.PetHeader
 import com.petcare.app.components.PetImage
 import com.petcare.app.navigation.Screen
-import com.petcare.app.ui.theme.ButtonColor
-import com.petcare.app.ui.theme.ButtonDisabledColor
-import com.petcare.app.ui.theme.ColorPrimary
-import com.petcare.app.ui.theme.ColorPrimaryLight
 
 
 @Composable
@@ -55,7 +53,7 @@ internal fun OnBoardingScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(color = ButtonDisabledColor)
+            .background(color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f))
             .padding(horizontal = 10.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -77,15 +75,15 @@ internal fun OnBoardingScreen(
             )
             PetButton(
                 title = "Enter name",
-                color = ColorPrimaryLight,
-                textColor = ButtonColor,
+                color = MaterialTheme.colorScheme.surface,
+                textColor = MaterialTheme.colorScheme.primary,
                 onClicked = { navController.navigate(Screen.EnterName.route) }
             )
             PetButton(
                 title = if (name.isEmpty()) "Continue" else "Continue as $name",
-                color = ColorPrimaryLight,
-                disabledColor = ColorPrimary,
-                textColor = ButtonColor,
+                color = MaterialTheme.colorScheme.surface,
+                disabledColor = MaterialTheme.colorScheme.primaryContainer,
+                textColor = MaterialTheme.colorScheme.primary,
                 enabled = name.isNotEmpty(),
                 onClicked = {
                     navController.navigate(Screen.PetList.route) {
@@ -97,8 +95,11 @@ internal fun OnBoardingScreen(
     }
 }
 
-@Preview
+@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 private fun OnBoardingScreenPreview() {
-    OnBoardingScreen(navController = NavController(LocalContext.current), onNameChanged = {})
+    com.petcare.app.ui.theme.PetCareTheme {
+        OnBoardingScreen(navController = NavController(LocalContext.current), onNameChanged = {})
+    }
 }

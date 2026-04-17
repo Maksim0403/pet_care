@@ -1,5 +1,6 @@
 package com.petcare.app.pet_profile
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,14 +17,12 @@ import com.petcare.app.components.PetImage
 import com.petcare.app.components.PetInfo
 import com.petcare.app.data.PetRepository
 import com.petcare.app.models.Pet
-import com.petcare.app.ui.theme.ColorBackground
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.graphics.Color
 
 @Composable
 fun PetProfileScreen(modifier: Modifier = Modifier, petId: Int, onBackClicked: () -> Unit) {
@@ -57,7 +56,7 @@ private fun LoadingScreen(onBackClicked: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = ColorBackground),
+            .background(color = MaterialTheme.colorScheme.background),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -67,7 +66,6 @@ private fun LoadingScreen(onBackClicked: () -> Unit) {
                 .padding(top = 16.dp, start = 16.dp)
                 .clickable { onBackClicked() })
 
-        // Loading indicator
         CircularProgressIndicator()
     }
 }
@@ -83,7 +81,7 @@ private fun SuccessScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(color = ColorBackground)
+            .background(color = MaterialTheme.colorScheme.background)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -127,7 +125,7 @@ private fun ErrorScreen(message: String, onBackClicked: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = ColorBackground),
+            .background(color = MaterialTheme.colorScheme.background),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -140,13 +138,16 @@ private fun ErrorScreen(message: String, onBackClicked: () -> Unit) {
         Text(
             text = "Error: $message",
             style = MaterialTheme.typography.headlineSmall,
-            color = Color.Red
+            color = MaterialTheme.colorScheme.error
         )
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 private fun PetProfileScreenPreview() {
-    PetProfileScreen(petId = PetRepository.getAllPets()[0].id, onBackClicked = {})
+    com.petcare.app.ui.theme.PetCareTheme {
+        PetProfileScreen(petId = PetRepository.getAllPets()[0].id, onBackClicked = {})
+    }
 }

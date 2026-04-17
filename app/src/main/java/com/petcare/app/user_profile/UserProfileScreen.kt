@@ -1,6 +1,6 @@
 package com.petcare.app.user_profile
 
-import android.R.attr.textColor
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,24 +8,19 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.petcare.app.components.PetButton
 import com.petcare.app.components.PetHeader
 import com.petcare.app.components.PetTextField
-import com.petcare.app.ui.theme.ButtonColor
-import com.petcare.app.ui.theme.ButtonDisabledColor
-import com.petcare.app.ui.theme.ColorBackground
-import com.petcare.app.ui.theme.ColorPrimaryLight
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun UserProfileScreen(
@@ -33,22 +28,24 @@ fun UserProfileScreen(
     name: String,
     onNameChanged: (String) -> Unit
 ) {
+    val viewModel = viewModel<UserProfileViewModel>(
+        factory = UserProfileViewModel.Companion.Factory(name, onNameChanged)
+    )
+    val nameInput by viewModel.nameInput.collectAsStateWithLifecycle()
 
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(color = ColorBackground)
+            .background(color = MaterialTheme.colorScheme.background)
             .padding(10.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        var nameInput by remember { mutableStateOf(name) }
-
         Spacer(Modifier.height(16.dp))
         PetHeader(text = "Pet Care", Modifier)
         PetHeader(text = "User profile", Modifier)
 
-        Text(text = "v.0.5", color = Color.Black)
-        Text(text = "Maksym Didychuk", color = Color.Black)
+        Text(text = "v.0.5", color = MaterialTheme.colorScheme.onBackground)
+        Text(text = "Maksym Didychuk", color = MaterialTheme.colorScheme.onBackground)
 
         Spacer(modifier = Modifier.height(50.dp))
 
@@ -56,25 +53,27 @@ fun UserProfileScreen(
             text = nameInput,
             title = "Username",
             keyboardType = KeyboardType.Text,
-            onTextChange = { nameInput = it })
+            onTextChange = { viewModel.updateNameInput(it) }
+        )
 
         Spacer(modifier = Modifier.height(32.dp))
 
         PetButton(
             title = "Update username",
-            color = ButtonColor,
-            disabledColor = ButtonDisabledColor,
-            textColor = ColorPrimaryLight,
+            color = MaterialTheme.colorScheme.primary,
+            disabledColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            textColor = MaterialTheme.colorScheme.onPrimary,
             enabled = true,
-            onClicked = {
-                onNameChanged(nameInput)
-            },
+            onClicked = { viewModel.updateUsername() }
         )
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 private fun UserProfileScreenPreview() {
-    UserProfileScreen(name = "UserName", onNameChanged = {})
+    com.petcare.app.ui.theme.PetCareTheme {
+        UserProfileScreen(name = "UserName", onNameChanged = {})
+    }
 }
