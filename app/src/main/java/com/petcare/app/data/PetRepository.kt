@@ -49,8 +49,8 @@ object PetRepository {
         petDao.updateFavoriteStatus(petId, isFavorite)
     }
 
-    fun getPetById(id: Int): Pet? {
-        return null
+    suspend fun getPetById(id: Int):  Pet? {
+        return  petDao.getPetById(id)?.let { PetMapper.toPet(it)}
     }
 
     fun getPetTypes(): List<PetType> = PetType.entries

@@ -2,7 +2,6 @@ package com.petcare.app.pet_list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.petcare.app.R
 import com.petcare.app.data.PetRepository
 import com.petcare.app.models.Pet
 import com.petcare.app.models.PetType
@@ -13,7 +12,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -38,7 +36,12 @@ class PetListViewModel : ViewModel() {
             initialValue = emptyList()
         )
 
-    val filteredPets: StateFlow<List<Pet>> = combine(PetRepository.petsFlow, _selectedType, _sortOrder, _showOnlyFavorites) { pets, type, sort, showFavOnly ->
+    val filteredPets: StateFlow<List<Pet>> = combine(
+        PetRepository.petsFlow,
+        _selectedType,
+        _sortOrder,
+        _showOnlyFavorites
+    ) { pets, type, sort, showFavOnly ->
         var filtered = if (type == PetType.ALL) pets else pets.filter { it.type == type }
         
         if (showFavOnly) {

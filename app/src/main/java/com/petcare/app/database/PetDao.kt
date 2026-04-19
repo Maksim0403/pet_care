@@ -24,5 +24,7 @@ interface PetDao {
 
     @Query("SELECT * FROM pets WHERE isFavorite = 1")
     fun getFavoritePets(): Flow<List<PetEntity>>
-}
 
+    @Query("SELECT * FROM pets WHERE id = :petId")
+    suspend fun getPetById(petId: Int): PetEntity?
+}
