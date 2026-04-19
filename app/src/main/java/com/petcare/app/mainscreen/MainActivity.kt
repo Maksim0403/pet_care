@@ -13,29 +13,32 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.petcare.app.data.PetRepository
+import com.petcare.app.data.SettingsDataStore
 import com.petcare.app.lab_1.runLabDemonstration
-import com.petcare.app.models.Pet
 import com.petcare.app.navigation.BottomNavItem
 import com.petcare.app.navigation.NavGraph
 import com.petcare.app.ui.theme.PetCareTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        // Initialize PetRepository with context
+        PetRepository.init(this)
         // Lab 1
         runLabDemonstration()
 
         setContent {
-            var pets by remember { mutableStateOf<List<Pet>>(PetRepository.getAllPets()) }
+            // Create SettingsDataStore instance for this Activity
+            val settingsDataStore = remember { SettingsDataStore(this@MainActivity) }
 
             val navController = rememberNavController()
 
@@ -89,9 +92,11 @@ class MainActivity : ComponentActivity() {
                         navController = navController,
                         modifier = Modifier.padding(innerPadding),
                         onPetAdded = { pet ->
-                            PetRepository.addPet(pet)
-                            pets = PetRepository.getAllPets()
+                            lifecycleScope.launch {
+                                PetRepository.addPet(pet)
+                            }
                         },
+                        settingsDataStore = settingsDataStore
                     )
                 }
             }

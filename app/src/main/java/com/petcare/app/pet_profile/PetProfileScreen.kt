@@ -1,6 +1,5 @@
 package com.petcare.app.pet_profile
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -66,6 +65,7 @@ private fun LoadingScreen(onBackClicked: () -> Unit) {
                 .padding(top = 16.dp, start = 16.dp)
                 .clickable { onBackClicked() })
 
+        // Loading indicator
         CircularProgressIndicator()
     }
 }
@@ -143,11 +143,8 @@ private fun ErrorScreen(message: String, onBackClicked: () -> Unit) {
     }
 }
 
-@Preview(showBackground = true, name = "Light Mode")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Preview(showBackground = true)
 @Composable
 private fun PetProfileScreenPreview() {
-    com.petcare.app.ui.theme.PetCareTheme {
-        PetProfileScreen(petId = PetRepository.getAllPets()[0].id, onBackClicked = {})
-    }
+    PetProfileScreen(petId = PetRepository.getAllPets()[0].id, onBackClicked = {})
 }

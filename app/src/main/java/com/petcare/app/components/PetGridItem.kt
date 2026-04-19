@@ -1,11 +1,14 @@
 package com.petcare.app.components
 
+import androidx.benchmark.traceprocessor.Row
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,7 +28,12 @@ import com.petcare.app.models.Pet
 import com.petcare.app.ui.theme.ColorPrimaryLight
 
 @Composable
-internal fun PetGridItem(animal: Pet, onRemoveClicked: () -> Unit, onClick: () -> Unit) {
+internal fun PetGridItem(
+    animal: Pet,
+    onRemoveClicked: () -> Unit,
+    onClick: () -> Unit,
+    onFavoriteClicked: (() -> Unit)? = null
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -37,18 +45,42 @@ internal fun PetGridItem(animal: Pet, onRemoveClicked: () -> Unit, onClick: () -
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        val painter = painterResource(R.drawable.ic_remove)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(5.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (onFavoriteClicked != null) {
+                val favoriteIcon = if (animal.isFavorite)
+                    R.drawable.ic_favorite_filled
+                else
+                    R.drawable.ic_favorite_outline
+                val favoritePainter = painterResource(favoriteIcon)
 
-        Image(
-            modifier = Modifier
-                .size(36.dp)
-                .padding(end = 5.dp)
-                .clickable { onRemoveClicked() }
-                .align(Alignment.End),
-            painter = painter,
-            contentDescription = null,
-            contentScale = ContentScale.Fit,
-        )
+                Image(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clickable { onFavoriteClicked() },
+                    painter = favoritePainter,
+                    contentDescription = if (animal.isFavorite) "Remove from favorites" else "Add to favorites",
+                    contentScale = ContentScale.Fit,
+                )
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            val painter = painterResource(R.drawable.ic_remove)
+
+            Image(
+                modifier = Modifier
+                    .size(36.dp)
+                    .padding(end = 5.dp)
+                    .clickable { onRemoveClicked() },
+                painter = painter,
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+            )
+        }
 
         PetImage(
             modifier = Modifier.padding(vertical = 10.dp),

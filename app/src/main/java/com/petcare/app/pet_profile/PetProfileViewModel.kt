@@ -32,7 +32,7 @@ class PetProfileViewModel(private val petId: Int) : ViewModel() {
     private fun loadPetDetails() {
         viewModelScope.launch {
             _state.value = PetDetailState.Loading
-            delay(500)
+            delay(500) // Simulate loading delay
 
             val pet = PetRepository.getPetById(petId)
             if (pet != null) {
@@ -46,9 +46,10 @@ class PetProfileViewModel(private val petId: Int) : ViewModel() {
     }
 
     private fun computeRelatedPets(pet: Pet): List<Pet> {
+        // Return other pets of the same type, excluding the current pet
         return PetRepository.getAllPets()
             .filter { it.type == pet.type && it.id != pet.id }
-            .take(3)
+            .take(3) // Limit to 3 related pets
     }
 
     private fun computeStatistics(pet: Pet): String {

@@ -10,7 +10,8 @@ open class Pet(
     var weight: Double = 0.0,
     var breed: String? = null,
     val imageResId: Int? = null,
-    val summary: String = ""
+    val summary: String = "",
+    var isFavorite: Boolean = false
 ) : Serializable {
     open fun makeSound(): String {
         return "Animal sounds"

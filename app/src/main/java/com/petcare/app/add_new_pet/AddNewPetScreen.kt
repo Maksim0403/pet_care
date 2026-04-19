@@ -1,6 +1,5 @@
 package com.petcare.app.add_new_pet
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -122,7 +121,7 @@ internal fun AddNewPetScreen(
                         age = petAge,
                         imageResId = petImage,
                         petType = selectedPet,
-                        id = PetRepository.getNextId()
+                        id = 0
                     )
                 onAnimalAdded(newPet)
             }
@@ -172,11 +171,8 @@ private fun createPet(name: String, age: String, imageResId: Int, petType: PetTy
     }
 }
 
-@Preview(showBackground = true, name = "Light Mode")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Preview
 @Composable
 private fun AddNewPetScreenPreview() {
-    com.petcare.app.ui.theme.PetCareTheme {
-        AddNewPetScreen(Modifier, {}, {})
-    }
+    AddNewPetScreen(Modifier, {}, {})
 }

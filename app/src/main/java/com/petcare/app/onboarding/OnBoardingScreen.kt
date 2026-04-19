@@ -1,6 +1,5 @@
 package com.petcare.app.onboarding
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -95,11 +94,8 @@ internal fun OnBoardingScreen(
     }
 }
 
-@Preview(showBackground = true, name = "Light Mode")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Preview
 @Composable
 private fun OnBoardingScreenPreview() {
-    com.petcare.app.ui.theme.PetCareTheme {
-        OnBoardingScreen(navController = NavController(LocalContext.current), onNameChanged = {})
-    }
+    OnBoardingScreen(navController = NavController(LocalContext.current), onNameChanged = {})
 }

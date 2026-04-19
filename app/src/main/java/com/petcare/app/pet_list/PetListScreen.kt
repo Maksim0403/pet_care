@@ -1,6 +1,5 @@
 package com.petcare.app.pet_list
 
-import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,7 +30,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -129,6 +127,9 @@ private fun Content(
 ) {
     val viewModel = viewModel<PetListViewModel>()
     val allPets by viewModel.allPets.collectAsStateWithLifecycle()
+    val selectedOption by viewModel.selectedType.collectAsStateWithLifecycle()
+    val sortOrder by viewModel.sortOrder.collectAsStateWithLifecycle()
+    val showOnlyFavorites by viewModel.showOnlyFavorites.collectAsStateWithLifecycle()
 
     Box(
         modifier = modifier
@@ -148,8 +149,6 @@ private fun Content(
                 }
             }
 
-            var selectedOption by remember { mutableStateOf(PetType.ALL) }
-            var sortOrder by remember { mutableStateOf(SortOrder.NONE) }
             var filterExpanded by remember { mutableStateOf(false) }
 
             val petCountText by remember(pets.size) {
@@ -178,7 +177,6 @@ private fun Content(
                         text = options[i].name,
                         isSelected = selectedOption == options[i],
                         onClick = {
-                            selectedOption = options[i]
                             viewModel.setSelectedType(options[i])
                         }
                     )
@@ -186,32 +184,54 @@ private fun Content(
             }
             Spacer(Modifier.height(10.dp))
 
-            Box {
-                Button(onClick = { filterExpanded = true }) {
-                    Text(text = "Sort: ${sortOrder.name}", modifier = Modifier.fillMaxWidth())
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(modifier = Modifier.weight(1f)) {
+                    Button(onClick = { filterExpanded = true }, modifier = Modifier.fillMaxWidth()) {
+                        Text(text = "Sort: ${sortOrder.name}")
+                    }
+                    DropdownMenu(
+                        expanded = filterExpanded,
+                        onDismissRequest = { filterExpanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("None") },
+                            onClick = { viewModel.setSortOrder(SortOrder.NONE); filterExpanded = false }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("By Name") },
+                            onClick = { viewModel.setSortOrder(SortOrder.NAME); filterExpanded = false }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("By Age") },
+                            onClick = { viewModel.setSortOrder(SortOrder.AGE); filterExpanded = false }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("By Weight") },
+                            onClick = { viewModel.setSortOrder(SortOrder.WEIGHT); filterExpanded = false }
+                        )
+                    }
                 }
-                DropdownMenu(
-                    expanded = filterExpanded,
-                    onDismissRequest = { filterExpanded = false }
+
+                Button(
+                    onClick = { viewModel.toggleShowOnlyFavorites() },
+                    modifier = Modifier.weight(1f),
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = if (showOnlyFavorites)
+                            MaterialTheme.colorScheme.primary
+                        else
+                            MaterialTheme.colorScheme.secondary
+                    )
                 ) {
-                    DropdownMenuItem(
-                        text = { Text("None") },
-                        onClick = { sortOrder = SortOrder.NONE; viewModel.setSortOrder(SortOrder.NONE); filterExpanded = false }
-                    )
-                    DropdownMenuItem(
-                        text = { Text("By Name") },
-                        onClick = { sortOrder = SortOrder.NAME; viewModel.setSortOrder(SortOrder.NAME); filterExpanded = false }
-                    )
-                    DropdownMenuItem(
-                        text = { Text("By Age") },
-                        onClick = { sortOrder = SortOrder.AGE; viewModel.setSortOrder(SortOrder.AGE); filterExpanded = false }
-                    )
-                    DropdownMenuItem(
-                        text = { Text("By Weight") },
-                        onClick = { sortOrder = SortOrder.WEIGHT; viewModel.setSortOrder(SortOrder.WEIGHT); filterExpanded = false }
-                    )
+                    Text(if (showOnlyFavorites) "★ Favorites" else "☆ All")
                 }
             }
+
             Spacer(Modifier.height(10.dp))
             if (isColumn) {
                 LazyColumn(
@@ -225,7 +245,9 @@ private fun Content(
                         PetListItem(
                             animal = pet,
                             onRemoveClicked = { onRemovePetClicked(pet) },
-                            onClick = { onPetClicked(pet) })
+                            onClick = { onPetClicked(pet) },
+                            onFavoriteClicked = { viewModel.toggleFavorite(pet.id, pet.isFavorite) }
+                        )
                     }
                 }
             } else {
@@ -244,7 +266,9 @@ private fun Content(
                         PetGridItem(
                             animal = pet,
                             onRemoveClicked = { onRemovePetClicked(pet) },
-                            onClick = { onPetClicked(pet) })
+                            onClick = { onPetClicked(pet) },
+                            onFavoriteClicked = { viewModel.toggleFavorite(pet.id, pet.isFavorite) }
+                        )
                     }
                 }
             }
@@ -283,16 +307,13 @@ private fun AddNewPetButton(modifier: Modifier = Modifier, onClick: () -> Unit) 
     }
 }
 
-@Preview(showBackground = true, name = "Light Mode")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Preview(showBackground = true)
 @Composable
 private fun PetListScreenPreview() {
-    com.petcare.app.ui.theme.PetCareTheme {
-        Content(
-            pets = PetRepository.getAllPets(),
-            addNewPetClicked = {},
-            isColumn = true,
-            onRemovePetClicked = {},
-            onPetClicked = {})
-    }
+    Content(
+        pets = PetRepository.getAllPets(),
+        addNewPetClicked = {},
+        isColumn = true,
+        onRemovePetClicked = {},
+        onPetClicked = {})
 }

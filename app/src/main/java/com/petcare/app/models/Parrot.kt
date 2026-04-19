@@ -8,8 +8,9 @@ class Parrot(
     breed: String?,
     var wingSpan: Double,
     imageResId: Int? = null,
-    summary: String = ""
-) : Pet(id, name, PetType.BIRD, age, weight, breed, imageResId, summary) {
+    summary: String = "",
+    isFavorite: Boolean = false
+) : Pet(id, name, PetType.BIRD, age, weight, breed, imageResId, summary, isFavorite) {
 
     override fun makeSound(): String {
         return "Squawk-squawk"

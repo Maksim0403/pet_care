@@ -24,7 +24,12 @@ import com.petcare.app.models.Cat
 import com.petcare.app.models.Pet
 
 @Composable
-internal fun PetListItem(animal: Pet, onRemoveClicked: () -> Unit, onClick: () -> Unit) {
+internal fun PetListItem(
+    animal: Pet,
+    onRemoveClicked: () -> Unit,
+    onClick: () -> Unit,
+    onFavoriteClicked: (() -> Unit)? = null
+) {
     Column(modifier = Modifier.fillMaxWidth().clickable{onClick()}) {
         Row(
             modifier = Modifier
@@ -47,17 +52,40 @@ internal fun PetListItem(animal: Pet, onRemoveClicked: () -> Unit, onClick: () -
                         animal.name,
                         modifier = Modifier
                     )
-                    val painter = painterResource(R.drawable.ic_remove)
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(5.dp)
+                    ) {
+                        // NEW: Favorite button
+                        if (onFavoriteClicked != null) {
+                            val favoriteIcon = if (animal.isFavorite)
+                                R.drawable.ic_favorite_filled
+                            else
+                                R.drawable.ic_favorite_outline
+                            val favoritePainter = painterResource(favoriteIcon)
 
-                    Image(
-                        modifier = Modifier
-                            .size(36.dp)
-                            .padding(end = 5.dp)
-                            .clickable { onRemoveClicked() },
-                        painter = painter,
-                        contentDescription = null,
-                        contentScale = ContentScale.Fit,
-                    )
+                            Image(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .padding(end = 2.dp)
+                                    .clickable { onFavoriteClicked() },
+                                painter = favoritePainter,
+                                contentDescription = if (animal.isFavorite) "Remove from favorites" else "Add to favorites",
+                                contentScale = ContentScale.Fit,
+                            )
+                        }
+
+                        val painter = painterResource(R.drawable.ic_remove)
+
+                        Image(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .padding(end = 5.dp)
+                                .clickable { onRemoveClicked() },
+                            painter = painter,
+                            contentDescription = null,
+                            contentScale = ContentScale.Fit,
+                        )
+                    }
                 }
                 Row(
                     modifier = Modifier.fillMaxWidth(),

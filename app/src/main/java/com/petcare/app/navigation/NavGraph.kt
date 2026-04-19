@@ -20,6 +20,7 @@ import com.petcare.app.onboarding.OnBoardingScreen
 import com.petcare.app.pet_list.PetListScreen
 import com.petcare.app.pet_profile.PetProfileScreen
 import com.petcare.app.data.PetRepository
+import com.petcare.app.data.SettingsDataStore
 import kotlinx.coroutines.delay
 
 @Composable
@@ -27,9 +28,25 @@ fun NavGraph(
     navController: NavHostController,
     modifier: Modifier,
     onPetAdded: (Pet) -> Unit,
+    settingsDataStore: SettingsDataStore,
 ) {
     var isLoading by remember { mutableStateOf(true) }
     var name by remember { mutableStateOf("") }
+    
+    // Check if user name exists in DataStore
+    // This determines whether to show onboarding
+    var hasExistingUser by remember { mutableStateOf(false) }
+    var startDestination by remember { mutableStateOf(Screen.Onboarding.route) }
+
+    LaunchedEffect(Unit) {
+        // Check if user has already set their name
+        settingsDataStore.hasUserName.collect { hasName ->
+            hasExistingUser = hasName
+            // If user exists, skip onboarding and go directly to PetList
+            // Otherwise, show onboarding
+            startDestination = if (hasName) Screen.PetList.route else Screen.Onboarding.route
+        }
+    }
 
     LaunchedEffect(Unit) {
         if (isLoading) {
@@ -38,18 +55,25 @@ fun NavGraph(
         }
     }
 
-    val startDestination = Screen.Onboarding.route
-
     NavHost(
         navController = navController,
         startDestination = startDestination,
     ) {
         composable(Screen.Onboarding.route) {
-            OnBoardingScreen(navController = navController, onNameChanged = {name = it})
+            OnBoardingScreen(
+                navController = navController,
+                onNameChanged = { newName ->
+                    name = newName
+                }
+            )
         }
 
         composable(Screen.EnterName.route) {
-            EnterNameScreen(modifier = modifier, navController = navController)
+            EnterNameScreen(
+                modifier = modifier,
+                navController = navController,
+                settingsDataStore = settingsDataStore
+            )
         }
 
         composable(Screen.PetList.route) {
@@ -75,6 +99,7 @@ fun NavGraph(
                 onCloseClicked = { navController.popBackStack() }
             )
         }
+        
         composable(Screen.PetGrid.route) {
             PetListScreen(
                 isColumn = false,
@@ -102,9 +127,10 @@ fun NavGraph(
             UserProfileScreen(
                 modifier = modifier,
                 name = name,
-                onNameChanged = {
-                    name = it
-                }
+                onNameChanged = { newName ->
+                    name = newName
+                },
+                settingsDataStore = settingsDataStore
             )
         }
     }
