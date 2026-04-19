@@ -4,7 +4,6 @@ import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
@@ -25,13 +26,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.petcare.app.components.PetButton
 import com.petcare.app.components.PetHeader
 import com.petcare.app.components.PetTextField
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import com.petcare.app.data.SettingsDataStore
 
 /**
@@ -57,7 +56,7 @@ fun UserProfileScreen(
     val viewModel = viewModel<UserProfileViewModel>(
         factory = UserProfileViewModel.Companion.Factory(settingsDataStore, onNameChanged)
     )
-    
+
     // Collect all settings as states
     val nameInput by viewModel.nameInput.collectAsStateWithLifecycle()
     val measurementUnit by viewModel.measurementUnitInput.collectAsStateWithLifecycle()
@@ -78,7 +77,7 @@ fun UserProfileScreen(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Spacer(Modifier.height(16.dp))
-        
+
         // Header
         PetHeader(text = "Pet Care", Modifier)
         PetHeader(text = "Settings", Modifier)
@@ -105,7 +104,7 @@ fun UserProfileScreen(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground
         )
-        
+
         Button(
             onClick = { showMeasurementDropdown = true },
             modifier = Modifier.fillMaxWidth(),
@@ -160,7 +159,7 @@ fun UserProfileScreen(
             expanded = showSortModeDropdown,
             onDismissRequest = { showSortModeDropdown = false }
         ) {
-            listOf("name", "date", "breed").forEach { mode ->
+            listOf("name", "age", "weight").forEach { mode ->
                 DropdownMenuItem(
                     text = { Text(mode.replaceFirstChar { it.uppercase() }) },
                     onClick = {
@@ -202,7 +201,11 @@ fun UserProfileScreen(
             expanded = showLanguageDropdown,
             onDismissRequest = { showLanguageDropdown = false }
         ) {
-            listOf("en" to "English", "uk" to "Українська", "de" to "Deutsch").forEach { (code, label) ->
+            listOf(
+                "en" to "English",
+                "uk" to "Українська",
+                "de" to "Deutsch"
+            ).forEach { (code, label) ->
                 DropdownMenuItem(
                     text = { Text(label) },
                     onClick = {

@@ -13,14 +13,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.petcare.app.add_new_pet.AddNewPetScreen
-import com.petcare.app.user_profile.UserProfileScreen
+import com.petcare.app.data.SettingsDataStore
 import com.petcare.app.enter_name.EnterNameScreen
 import com.petcare.app.models.Pet
 import com.petcare.app.onboarding.OnBoardingScreen
 import com.petcare.app.pet_list.PetListScreen
 import com.petcare.app.pet_profile.PetProfileScreen
-import com.petcare.app.data.PetRepository
-import com.petcare.app.data.SettingsDataStore
+import com.petcare.app.user_profile.UserProfileScreen
 import kotlinx.coroutines.delay
 
 @Composable
@@ -32,7 +31,7 @@ fun NavGraph(
 ) {
     var isLoading by remember { mutableStateOf(true) }
     var name by remember { mutableStateOf("") }
-    
+
     // Check if user name exists in DataStore
     // This determines whether to show onboarding
     var hasExistingUser by remember { mutableStateOf(false) }
@@ -85,7 +84,8 @@ fun NavGraph(
                 },
                 onPetClicked = { pet ->
                     navController.navigate(Screen.PetDetail.createRoute(pet.id))
-                }
+                },
+                settingsDataStore = settingsDataStore
             )
         }
 
@@ -99,7 +99,7 @@ fun NavGraph(
                 onCloseClicked = { navController.popBackStack() }
             )
         }
-        
+
         composable(Screen.PetGrid.route) {
             PetListScreen(
                 isColumn = false,
@@ -109,7 +109,8 @@ fun NavGraph(
                 },
                 onPetClicked = { pet ->
                     navController.navigate(Screen.PetDetail.createRoute(pet.id))
-                }
+                },
+                settingsDataStore = settingsDataStore
             )
         }
 

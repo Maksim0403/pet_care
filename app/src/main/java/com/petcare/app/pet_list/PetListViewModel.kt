@@ -3,6 +3,7 @@ package com.petcare.app.pet_list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.petcare.app.data.PetRepository
+import com.petcare.app.data.SettingsDataStore
 import com.petcare.app.models.Pet
 import com.petcare.app.models.PetType
 import com.petcare.app.models.SortOrder
@@ -15,7 +16,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class PetListViewModel : ViewModel() {
+class PetListViewModel(private val settingsDataStore: SettingsDataStore) : ViewModel() {
 
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading
@@ -43,11 +44,11 @@ class PetListViewModel : ViewModel() {
         _showOnlyFavorites
     ) { pets, type, sort, showFavOnly ->
         var filtered = if (type == PetType.ALL) pets else pets.filter { it.type == type }
-        
+
         if (showFavOnly) {
             filtered = filtered.filter { it.isFavorite }
         }
-        
+
         when (sort) {
             SortOrder.NONE -> filtered
             SortOrder.NAME -> filtered.sortedBy { it.name }
@@ -57,7 +58,21 @@ class PetListViewModel : ViewModel() {
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     init {
+        loadSortModeInitially()
         loadPets()
+    }
+
+    private fun loadSortModeInitially() {
+        viewModelScope.launch {
+            settingsDataStore.sortMode.collect { mode ->
+                _sortOrder.value = when (mode) {
+                    "name" -> SortOrder.NAME
+                    "weight" -> SortOrder.WEIGHT
+                    "age" -> SortOrder.AGE
+                    else -> SortOrder.NONE
+                }
+            }
+        }
     }
 
     private fun loadPets() {
@@ -89,6 +104,20 @@ class PetListViewModel : ViewModel() {
     fun toggleFavorite(petId: Int, currentState: Boolean) {
         viewModelScope.launch {
             PetRepository.toggleFavorite(petId, !currentState)
+        }
+    }
+
+    companion object {
+        class Factory(
+            private val settingsDataStore: SettingsDataStore,
+        ) : androidx.lifecycle.ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                if (modelClass.isAssignableFrom(PetListViewModel::class.java)) {
+                    return PetListViewModel(settingsDataStore) as T
+                }
+                throw IllegalArgumentException("Unknown ViewModel class")
+            }
         }
     }
 }

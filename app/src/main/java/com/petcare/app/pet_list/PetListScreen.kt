@@ -35,22 +35,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.petcare.app.R
 import com.petcare.app.components.PetGridItem
 import com.petcare.app.components.PetHeader
 import com.petcare.app.components.PetListItem
 import com.petcare.app.components.PetTitle
 import com.petcare.app.components.PetTypeOption
-import com.petcare.app.data.PetRepository
+import com.petcare.app.data.SettingsDataStore
 import com.petcare.app.models.Pet
 import com.petcare.app.models.PetType
 import com.petcare.app.models.SortOrder
@@ -60,9 +59,12 @@ fun PetListScreen(
     modifier: Modifier = Modifier,
     isColumn: Boolean,
     onPetAddClicked: () -> Unit,
-    onPetClicked: (Pet) -> Unit
+    onPetClicked: (Pet) -> Unit,
+    settingsDataStore: SettingsDataStore,
 ) {
-    val viewModel = viewModel<PetListViewModel>()
+    val viewModel = viewModel<PetListViewModel>(
+        factory = PetListViewModel.Companion.Factory(settingsDataStore)
+    )
     val pets by viewModel.filteredPets.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
@@ -77,7 +79,9 @@ fun PetListScreen(
                 onPetAddClicked()
             }, onRemovePetClicked = { pet ->
                 viewModel.removePet(pet)
-            }, onPetClicked = { pet -> onPetClicked(pet) })
+            }, onPetClicked = { pet -> onPetClicked(pet) },
+            viewModel = viewModel
+        )
 
     }
 }
@@ -110,7 +114,10 @@ private fun EmptyPets(modifier: Modifier = Modifier, addNewPetClicked: () -> Uni
         PetTitle(
             text = "Add first Pet", textAlign = TextAlign.Center, modifier = Modifier
                 .fillMaxWidth()
-                .background(color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f), shape = RoundedCornerShape(10.dp))
+                .background(
+                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f),
+                    shape = RoundedCornerShape(10.dp)
+                )
                 .padding(horizontal = 16.dp, vertical = 10.dp)
                 .clickable { addNewPetClicked() })
     }
@@ -124,8 +131,9 @@ private fun Content(
     addNewPetClicked: () -> Unit,
     onRemovePetClicked: (Pet) -> Unit,
     onPetClicked: (Pet) -> Unit,
+    viewModel: PetListViewModel,
 ) {
-    val viewModel = viewModel<PetListViewModel>()
+
     val allPets by viewModel.allPets.collectAsStateWithLifecycle()
     val selectedOption by viewModel.selectedType.collectAsStateWithLifecycle()
     val sortOrder by viewModel.sortOrder.collectAsStateWithLifecycle()
@@ -192,7 +200,10 @@ private fun Content(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(modifier = Modifier.weight(1f)) {
-                    Button(onClick = { filterExpanded = true }, modifier = Modifier.fillMaxWidth()) {
+                    Button(
+                        onClick = { filterExpanded = true },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         Text(text = "Sort: ${sortOrder.name}")
                     }
                     DropdownMenu(
@@ -201,19 +212,27 @@ private fun Content(
                     ) {
                         DropdownMenuItem(
                             text = { Text("None") },
-                            onClick = { viewModel.setSortOrder(SortOrder.NONE); filterExpanded = false }
+                            onClick = {
+                                viewModel.setSortOrder(SortOrder.NONE); filterExpanded = false
+                            }
                         )
                         DropdownMenuItem(
                             text = { Text("By Name") },
-                            onClick = { viewModel.setSortOrder(SortOrder.NAME); filterExpanded = false }
+                            onClick = {
+                                viewModel.setSortOrder(SortOrder.NAME); filterExpanded = false
+                            }
                         )
                         DropdownMenuItem(
                             text = { Text("By Age") },
-                            onClick = { viewModel.setSortOrder(SortOrder.AGE); filterExpanded = false }
+                            onClick = {
+                                viewModel.setSortOrder(SortOrder.AGE); filterExpanded = false
+                            }
                         )
                         DropdownMenuItem(
                             text = { Text("By Weight") },
-                            onClick = { viewModel.setSortOrder(SortOrder.WEIGHT); filterExpanded = false }
+                            onClick = {
+                                viewModel.setSortOrder(SortOrder.WEIGHT); filterExpanded = false
+                            }
                         )
                     }
                 }
@@ -306,7 +325,7 @@ private fun AddNewPetButton(modifier: Modifier = Modifier, onClick: () -> Unit) 
         )
     }
 }
-
+/*
 @Preview(showBackground = true)
 @Composable
 private fun PetListScreenPreview() {
@@ -316,4 +335,4 @@ private fun PetListScreenPreview() {
         isColumn = true,
         onRemovePetClicked = {},
         onPetClicked = {})
-}
+}*/
