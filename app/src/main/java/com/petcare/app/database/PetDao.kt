@@ -27,4 +27,7 @@ interface PetDao {
 
     @Query("SELECT * FROM pets WHERE id = :petId")
     suspend fun getPetById(petId: Int): PetEntity?
+
+    @Query("SELECT * FROM pets")
+    suspend fun getAllPetsOnce(): List<PetEntity>
 }

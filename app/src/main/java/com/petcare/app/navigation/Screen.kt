@@ -10,4 +10,10 @@ sealed class Screen(val route: String) {
         fun createRoute(petId: Int) = "pet_detail/$petId"
     }
     data object Profile   : Screen("profile")
+    data object ApiPetList : Screen("api_pet_list")
+    data object ApiPetDetail : Screen("api_pet_detail/{petIdentifier}") {
+        fun createRoute(petIdentifier: String) = "api_pet_detail/$petIdentifier"
+    }
+
+    data object ApiPetAdd : Screen("api_pet_add")
 }

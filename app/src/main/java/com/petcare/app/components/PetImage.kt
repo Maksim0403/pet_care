@@ -19,6 +19,7 @@ import com.petcare.app.ui.theme.ColorPrimaryLight
 
 @Composable
 fun PetImage(modifier: Modifier = Modifier, imageResId: Int, size: Int = 350) {
+
     Box(
         modifier = modifier.size(size.dp),
         contentAlignment = Alignment.Center
@@ -40,15 +41,17 @@ fun PetImage(modifier: Modifier = Modifier, imageResId: Int, size: Int = 350) {
                 )
         )
         val imageSize = size.dp
-        val painter = painterResource(imageResId)
+        //val painter = painterResource(imageResId)
+
+        val painter = if (imageResId != 0) {
+            painterResource(id = imageResId)
+        } else {
+            painterResource(R.drawable.cat_default)
+        }
 
         Image(
-            modifier = Modifier
-                .size(imageSize)
-                .padding(5.dp),
             painter = painter,
-            contentDescription = null,
-            contentScale = ContentScale.Fit,
+            contentDescription = null
         )
     }
 }

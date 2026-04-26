@@ -33,19 +33,6 @@ import com.petcare.app.components.PetHeader
 import com.petcare.app.components.PetTextField
 import com.petcare.app.data.SettingsDataStore
 
-/**
- * User Profile / Settings Screen
- * 
- * This screen shows all user settings that are saved to DataStore.
- * When user updates a field and clicks "Save Settings", everything is persisted
- * and will be there next time the app opens.
- * 
- * Settings displayed:
- * 1. Username
- * 2. Measurement Unit (kg or lb)
- * 3. Sort Mode (how to sort pets)
- * 4. Language
- */
 @Composable
 fun UserProfileScreen(
     modifier: Modifier = Modifier,
@@ -235,8 +222,7 @@ fun UserProfileScreen(
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 private fun UserProfileScreenPreview() {
-    // For preview, we create a mock DataStore (this won't actually persist)
-    // In real usage, it will be provided by MainActivity
+
     com.petcare.app.ui.theme.PetCareTheme {
         UserProfileScreen(
             name = "UserName",

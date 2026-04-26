@@ -13,10 +13,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.petcare.app.add_new_pet.AddNewPetScreen
+import com.petcare.app.pet_api.pet_list.ApiPetListScreen
+import com.petcare.app.pet_api.pet_profile.ApiPetProfileScreen
 import com.petcare.app.data.SettingsDataStore
 import com.petcare.app.enter_name.EnterNameScreen
 import com.petcare.app.models.Pet
 import com.petcare.app.onboarding.OnBoardingScreen
+import com.petcare.app.pet_api.add_pet.ApiPetAddScreen
 import com.petcare.app.pet_list.PetListScreen
 import com.petcare.app.pet_profile.PetProfileScreen
 import com.petcare.app.user_profile.UserProfileScreen
@@ -133,6 +136,36 @@ fun NavGraph(
                 },
                 settingsDataStore = settingsDataStore
             )
+        }
+
+        composable(Screen.ApiPetList.route) {
+            ApiPetListScreen(
+                modifier = modifier,
+                onPetClicked = { pet ->
+                    navController.navigate(Screen.ApiPetDetail.createRoute(pet.id.toString()))
+                },
+                onAddClicked = {
+                    navController.navigate(Screen.ApiPetAdd.route)
+                }
+            )
+        }
+
+        composable(
+            route = Screen.ApiPetDetail.route,
+            arguments = listOf(navArgument("petIdentifier") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val petIdentifier = backStackEntry.arguments?.getString("petIdentifier") ?: ""
+            ApiPetProfileScreen(modifier, petIdentifier, onBackClicked = {
+                navController.popBackStack()
+            })
+        }
+
+        composable(Screen.ApiPetAdd.route) {
+            ApiPetAddScreen(modifier, onBackClicked = {
+                navController.popBackStack()
+            }, onPetAdded = {
+                navController.popBackStack()
+            })
         }
     }
 }

@@ -48,6 +48,7 @@ class MainActivity : ComponentActivity() {
             val items = listOf(
                 BottomNavItem.PetList,
                 BottomNavItem.PetGrid,
+                BottomNavItem.ApiPets,
                 BottomNavItem.Profile
             )
 

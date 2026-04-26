@@ -15,8 +15,8 @@ data class PetEntity(
     val breed: String?,
     val imageResId: Int?,
     val summary: String,
-    val isTrained: Boolean? = null, // For Dog
-    val wingSpan: Double? = null,   // For Parrot
-    val isFavorite: Boolean = false  // NEW: Track favorite status
+    val isTrained: Boolean? = null,
+    val wingSpan: Double? = null,
+    val isFavorite: Boolean = false
 )
 
