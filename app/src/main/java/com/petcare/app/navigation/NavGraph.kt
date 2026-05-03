@@ -31,6 +31,7 @@ fun NavGraph(
     modifier: Modifier,
     onPetAdded: (Pet) -> Unit,
     settingsDataStore: SettingsDataStore,
+    isScreenExpanded: Boolean = false,
 ) {
     var isLoading by remember { mutableStateOf(true) }
     var name by remember { mutableStateOf("") }
@@ -88,7 +89,8 @@ fun NavGraph(
                 onPetClicked = { pet ->
                     navController.navigate(Screen.PetDetail.createRoute(pet.id))
                 },
-                settingsDataStore = settingsDataStore
+                settingsDataStore = settingsDataStore,
+                isScreenExpanded = isScreenExpanded
             )
         }
 
@@ -113,7 +115,8 @@ fun NavGraph(
                 onPetClicked = { pet ->
                     navController.navigate(Screen.PetDetail.createRoute(pet.id))
                 },
-                settingsDataStore = settingsDataStore
+                settingsDataStore = settingsDataStore,
+                isScreenExpanded = isScreenExpanded
             )
         }
 
@@ -161,9 +164,7 @@ fun NavGraph(
         }
 
         composable(Screen.ApiPetAdd.route) {
-            ApiPetAddScreen(modifier, onBackClicked = {
-                navController.popBackStack()
-            }, onPetAdded = {
+            ApiPetAddScreen(modifier,  onPetAdded = {
                 navController.popBackStack()
             })
         }

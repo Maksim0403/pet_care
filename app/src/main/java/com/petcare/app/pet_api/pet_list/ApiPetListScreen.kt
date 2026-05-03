@@ -274,7 +274,7 @@ private fun PetsList(
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(pets, key = { it.name }) { pet ->
+        items(pets) { pet ->
             ApiPetCard(
                 pet = pet,
                 onClick = { onPetClicked(pet) },

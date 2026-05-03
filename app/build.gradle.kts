@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.androidx.room3.runtime)
     implementation(libs.androidx.benchmark.traceprocessor)
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.adaptive)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -77,4 +78,6 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation("io.coil-kt:coil-compose:2.6.0")
+    // Adaptive design
+    implementation("androidx.compose.material3:material3-window-size-class")
 }

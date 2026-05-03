@@ -1,5 +1,6 @@
 package com.petcare.app.pet_api.pet_profile
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -97,7 +98,9 @@ private fun ApiSuccessScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        BackButton(modifier = Modifier)
+        BackButton(modifier = Modifier.clickable{
+            onBackClicked()
+        })
 
         Box(
             modifier = Modifier.fillMaxWidth(),

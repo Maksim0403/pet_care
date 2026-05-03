@@ -1,0 +1,124 @@
+package com.petcare.app.pet_list
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import com.petcare.app.data.MockPetRepository
+import com.petcare.app.data.SettingsDataStore
+import com.petcare.app.models.Pet
+import com.petcare.app.models.PetType
+import com.petcare.app.models.SortOrder
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+
+class MockPetListViewModel(private val settingsDataStore: SettingsDataStore) : ViewModel() {
+
+    private val _isLoading = MutableStateFlow(true)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
+    private val _selectedType = MutableStateFlow(PetType.ALL)
+    val selectedType: StateFlow<PetType> = _selectedType.asStateFlow()
+
+    private val _sortOrder = MutableStateFlow(SortOrder.NONE)
+    val sortOrder: StateFlow<SortOrder> = _sortOrder.asStateFlow()
+
+    private val _showOnlyFavorites = MutableStateFlow(false)
+    val showOnlyFavorites: StateFlow<Boolean> = _showOnlyFavorites.asStateFlow()
+
+    val allPets: StateFlow<List<Pet>> = MockPetRepository.petsFlow
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = MockPetRepository.pets
+        )
+
+    val filteredPets: StateFlow<List<Pet>> = combine(
+        MockPetRepository.petsFlow,
+        _selectedType,
+        _sortOrder,
+        _showOnlyFavorites
+    ) { pets, type, sort, showFavOnly ->
+        var filtered = if (type == PetType.ALL) pets else pets.filter { it.type == type }
+
+        if (showFavOnly) {
+            filtered = filtered.filter { it.isFavorite }
+        }
+
+        when (sort) {
+            SortOrder.NONE -> filtered
+            SortOrder.NAME -> filtered.sortedBy { it.name }
+            SortOrder.AGE -> filtered.sortedBy { it.age }
+            SortOrder.WEIGHT -> filtered.sortedBy { it.weight }
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    init {
+        loadSortModeInitially()
+        loadPets()
+    }
+
+    private fun loadSortModeInitially() {
+        viewModelScope.launch {
+            settingsDataStore.sortMode.collect { mode ->
+                _sortOrder.value = when (mode) {
+                    "name" -> SortOrder.NAME
+                    "weight" -> SortOrder.WEIGHT
+                    "age" -> SortOrder.AGE
+                    else -> SortOrder.NONE
+                }
+            }
+        }
+    }
+
+    private fun loadPets() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            delay(750) // 0.75 seconds
+            _isLoading.value = false
+        }
+    }
+
+    fun setSelectedType(type: PetType) {
+        _selectedType.value = type
+    }
+
+    fun setSortOrder(order: SortOrder) {
+        _sortOrder.value = order
+    }
+
+    fun toggleShowOnlyFavorites() {
+        _showOnlyFavorites.value = !_showOnlyFavorites.value
+    }
+
+    fun removePet(pet: Pet) {
+        viewModelScope.launch {
+            MockPetRepository.removePet(pet)
+        }
+    }
+
+    fun toggleFavorite(petId: Int, currentState: Boolean) {
+        viewModelScope.launch {
+            MockPetRepository.toggleFavorite(petId, !currentState)
+        }
+    }
+
+    companion object {
+        class Factory(
+            private val settingsDataStore: SettingsDataStore,
+        ) : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                if (modelClass.isAssignableFrom(MockPetListViewModel::class.java)) {
+                    return MockPetListViewModel(settingsDataStore) as T
+                }
+                throw IllegalArgumentException("Unknown ViewModel class")
+            }
+        }
+    }
+}

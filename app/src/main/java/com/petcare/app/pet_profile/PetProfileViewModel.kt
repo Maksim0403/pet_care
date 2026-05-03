@@ -3,6 +3,7 @@ package com.petcare.app.pet_profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.petcare.app.data.MockPetRepository
 import com.petcare.app.data.PetRepository
 import com.petcare.app.models.Pet
 import kotlinx.coroutines.delay
@@ -34,7 +35,10 @@ class PetProfileViewModel(private val petId: Int) : ViewModel() {
             _state.value = PetDetailState.Loading
             delay(500) // Simulate loading delay
 
-            val pet = PetRepository.getPetById(petId)
+            var pet = PetRepository.getPetById(petId)
+            if (pet == null ){
+                pet = MockPetRepository.getPetById(petId)
+            }
             if (pet != null) {
                 val relatedPets = computeRelatedPets(pet)
                 val statistics = computeStatistics(pet)
@@ -46,7 +50,6 @@ class PetProfileViewModel(private val petId: Int) : ViewModel() {
     }
 
     private fun computeRelatedPets(pet: Pet): List<Pet> {
-        // Return other pets of the same type, excluding the current pet
         return PetRepository.getAllPets()
             .filter { it.type == pet.type && it.id != pet.id }
             .take(3) // Limit to 3 related pets

@@ -26,11 +26,6 @@ object PetRepository {
             entities.map { PetMapper.toPet(it) }
         }
 
-    val favoritePetsFlow: Flow<List<Pet>>
-        get() = petDao.getFavoritePets().map { entities ->
-            entities.map { PetMapper.toPet(it) }
-        }
-
     fun getAllPets(): List<Pet> {
         return emptyList()
     }
@@ -51,11 +46,5 @@ object PetRepository {
 
     suspend fun getPetById(id: Int):  Pet? {
         return  petDao.getPetById(id)?.let { PetMapper.toPet(it)}
-    }
-
-    fun getPetTypes(): List<PetType> = PetType.entries
-
-    fun getNextId(): Int {
-        return 0
     }
 }

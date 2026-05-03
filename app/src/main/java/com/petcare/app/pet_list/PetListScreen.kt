@@ -1,5 +1,6 @@
 package com.petcare.app.pet_list
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,11 +10,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -29,7 +32,9 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -49,10 +55,14 @@ import com.petcare.app.components.PetHeader
 import com.petcare.app.components.PetListItem
 import com.petcare.app.components.PetTitle
 import com.petcare.app.components.PetTypeOption
+import com.petcare.app.data.MockPetRepository
 import com.petcare.app.data.SettingsDataStore
 import com.petcare.app.models.Pet
 import com.petcare.app.models.PetType
 import com.petcare.app.models.SortOrder
+import com.petcare.app.pet_profile.PetProfile
+import com.petcare.app.ui.theme.ButtonColor
+import com.petcare.app.ui.theme.PetCareTheme
 
 @Composable
 fun PetListScreen(
@@ -61,17 +71,30 @@ fun PetListScreen(
     onPetAddClicked: () -> Unit,
     onPetClicked: (Pet) -> Unit,
     settingsDataStore: SettingsDataStore,
+    isScreenExpanded: Boolean = false,
 ) {
-    val viewModel = viewModel<PetListViewModel>(
-        factory = PetListViewModel.Companion.Factory(settingsDataStore)
+    val viewModel = viewModel<MockPetListViewModel>(
+        factory = MockPetListViewModel.Companion.Factory(settingsDataStore)
     )
     val pets by viewModel.filteredPets.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val allPets by viewModel.allPets.collectAsStateWithLifecycle()
+    val selectedOption by viewModel.selectedType.collectAsStateWithLifecycle()
+    val sortOrder by viewModel.sortOrder.collectAsStateWithLifecycle()
+    val showOnlyFavorites by viewModel.showOnlyFavorites.collectAsStateWithLifecycle()
+
+    LaunchedEffect(pets) {
+        Log.d("PetListScreen", "Pets updated: ${pets.size} pets")
+    }
+
+    LaunchedEffect(allPets) {
+        Log.d("PetListScreen", "All Pets updated: ${allPets.size} pets")
+    }
 
     when {
         isLoading -> Loading()
-        pets.isEmpty() -> EmptyPets(addNewPetClicked = { onPetAddClicked() })
-        else -> Content(
+        pets.isEmpty() && allPets.isEmpty() -> EmptyPets(addNewPetClicked = { onPetAddClicked() })
+        else -> AdaptiveContent(
             modifier = modifier,
             pets = pets,
             isColumn = isColumn,
@@ -80,7 +103,19 @@ fun PetListScreen(
             }, onRemovePetClicked = { pet ->
                 viewModel.removePet(pet)
             }, onPetClicked = { pet -> onPetClicked(pet) },
-            viewModel = viewModel
+            allPets = allPets,
+            selectedOption = selectedOption,
+            sortOrder = sortOrder,
+            showOnlyFavorites = showOnlyFavorites,
+            onSetSelectedType = { type -> viewModel.setSelectedType(type) },
+            onSetSortOrder = { sort -> viewModel.setSortOrder(sort) },
+            onChangeToggleFavorites = {
+                viewModel.toggleShowOnlyFavorites()
+            },
+            toggleFavoriteChanged = { petId, isFavorite ->
+                viewModel.toggleFavorite(petId, isFavorite)
+            },
+            isScreenExpanded = isScreenExpanded
         )
 
     }
@@ -124,6 +159,89 @@ private fun EmptyPets(modifier: Modifier = Modifier, addNewPetClicked: () -> Uni
 }
 
 @Composable
+private fun AdaptiveContent(
+    modifier: Modifier = Modifier,
+    pets: List<Pet>,
+    isColumn: Boolean,
+    addNewPetClicked: () -> Unit,
+    onRemovePetClicked: (Pet) -> Unit,
+    onPetClicked: (Pet) -> Unit,
+    allPets: List<Pet> = listOf(),
+    selectedOption: PetType = PetType.ALL,
+    sortOrder: SortOrder = SortOrder.NONE,
+    showOnlyFavorites: Boolean = false,
+    onSetSelectedType: (PetType) -> Unit,
+    onSetSortOrder: (SortOrder) -> Unit,
+    onChangeToggleFavorites: () -> Unit,
+    toggleFavoriteChanged: (Int, Boolean) -> Unit,
+    isScreenExpanded: Boolean = false,
+) {
+
+    if (isScreenExpanded) {
+        Row(
+            modifier = modifier
+                .fillMaxSize()
+                .background(color = MaterialTheme.colorScheme.background)
+                .padding(horizontal = 10.dp),
+        ) {
+            var selectedPet: Pet by remember {
+                mutableStateOf(
+                    pets.first()
+                )
+            }
+            Content(
+                modifier = modifier.weight(1.3f),
+                pets = pets,
+                isColumn = isColumn,
+                addNewPetClicked = addNewPetClicked,
+                onRemovePetClicked = onRemovePetClicked,
+                onPetClicked = {
+                    selectedPet = it
+                },
+                allPets = allPets,
+                selectedOption = selectedOption,
+                sortOrder = sortOrder,
+                showOnlyFavorites = showOnlyFavorites,
+                onSetSelectedType = onSetSelectedType,
+                onSetSortOrder = onSetSortOrder,
+                onChangeToggleFavorites = onChangeToggleFavorites,
+                toggleFavoriteChanged = toggleFavoriteChanged,
+            )
+            VerticalDivider(
+                Modifier
+                    .width(1.dp)
+                    .fillMaxHeight(),
+                color = ButtonColor
+            )
+            PetProfile(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f),
+                pet = selectedPet,
+                showBackButton = false,
+            )
+        }
+    } else {
+        Content(
+            modifier = modifier,
+            pets = pets,
+            isColumn = isColumn,
+            addNewPetClicked = addNewPetClicked,
+            onRemovePetClicked = onRemovePetClicked,
+            onPetClicked = onPetClicked,
+            allPets = allPets,
+            selectedOption = selectedOption,
+            sortOrder = sortOrder,
+            showOnlyFavorites = showOnlyFavorites,
+            onSetSelectedType = onSetSelectedType,
+            onSetSortOrder = onSetSortOrder,
+            onChangeToggleFavorites = onChangeToggleFavorites,
+            toggleFavoriteChanged = toggleFavoriteChanged,
+        )
+    }
+}
+
+@Composable
 private fun Content(
     modifier: Modifier = Modifier,
     pets: List<Pet>,
@@ -131,14 +249,15 @@ private fun Content(
     addNewPetClicked: () -> Unit,
     onRemovePetClicked: (Pet) -> Unit,
     onPetClicked: (Pet) -> Unit,
-    viewModel: PetListViewModel,
+    allPets: List<Pet> = listOf(),
+    selectedOption: PetType = PetType.ALL,
+    sortOrder: SortOrder = SortOrder.NONE,
+    showOnlyFavorites: Boolean = false,
+    onSetSelectedType: (PetType) -> Unit,
+    onSetSortOrder: (SortOrder) -> Unit,
+    onChangeToggleFavorites: () -> Unit,
+    toggleFavoriteChanged: (Int, Boolean) -> Unit,
 ) {
-
-    val allPets by viewModel.allPets.collectAsStateWithLifecycle()
-    val selectedOption by viewModel.selectedType.collectAsStateWithLifecycle()
-    val sortOrder by viewModel.sortOrder.collectAsStateWithLifecycle()
-    val showOnlyFavorites by viewModel.showOnlyFavorites.collectAsStateWithLifecycle()
-
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -185,7 +304,7 @@ private fun Content(
                         text = options[i].name,
                         isSelected = selectedOption == options[i],
                         onClick = {
-                            viewModel.setSelectedType(options[i])
+                            onSetSelectedType(options[i])
                         }
                     )
                 }
@@ -213,32 +332,39 @@ private fun Content(
                         DropdownMenuItem(
                             text = { Text("None") },
                             onClick = {
-                                viewModel.setSortOrder(SortOrder.NONE); filterExpanded = false
+                                onSetSortOrder(SortOrder.NONE)
+                                filterExpanded = false
                             }
                         )
                         DropdownMenuItem(
                             text = { Text("By Name") },
                             onClick = {
-                                viewModel.setSortOrder(SortOrder.NAME); filterExpanded = false
+                                onSetSortOrder(SortOrder.NAME)
+                                filterExpanded = false
                             }
                         )
                         DropdownMenuItem(
                             text = { Text("By Age") },
                             onClick = {
-                                viewModel.setSortOrder(SortOrder.AGE); filterExpanded = false
+                                onSetSortOrder(SortOrder.AGE)
+                                filterExpanded = false
                             }
                         )
                         DropdownMenuItem(
                             text = { Text("By Weight") },
                             onClick = {
-                                viewModel.setSortOrder(SortOrder.WEIGHT); filterExpanded = false
+                                onSetSortOrder(SortOrder.WEIGHT)
+                                filterExpanded = false
                             }
                         )
                     }
                 }
 
                 Button(
-                    onClick = { viewModel.toggleShowOnlyFavorites() },
+                    onClick = {
+                        onChangeToggleFavorites()
+
+                    },
                     modifier = Modifier.weight(1f),
                     colors = androidx.compose.material3.ButtonDefaults.buttonColors(
                         containerColor = if (showOnlyFavorites)
@@ -265,7 +391,9 @@ private fun Content(
                             animal = pet,
                             onRemoveClicked = { onRemovePetClicked(pet) },
                             onClick = { onPetClicked(pet) },
-                            onFavoriteClicked = { viewModel.toggleFavorite(pet.id, pet.isFavorite) }
+                            onFavoriteClicked = {
+                                toggleFavoriteChanged(pet.id, pet.isFavorite)
+                            }
                         )
                     }
                 }
@@ -286,7 +414,9 @@ private fun Content(
                             animal = pet,
                             onRemoveClicked = { onRemovePetClicked(pet) },
                             onClick = { onPetClicked(pet) },
-                            onFavoriteClicked = { viewModel.toggleFavorite(pet.id, pet.isFavorite) }
+                            onFavoriteClicked = {
+                                toggleFavoriteChanged(pet.id, pet.isFavorite)
+                            }
                         )
                     }
                 }
@@ -325,14 +455,53 @@ private fun AddNewPetButton(modifier: Modifier = Modifier, onClick: () -> Unit) 
         )
     }
 }
-/*
-@Preview(showBackground = true)
+
+@Preview
 @Composable
-private fun PetListScreenPreview() {
-    Content(
-        pets = PetRepository.getAllPets(),
-        addNewPetClicked = {},
-        isColumn = true,
-        onRemovePetClicked = {},
-        onPetClicked = {})
-}*/
+private fun AdaptiveContentPreview() {
+    PetCareTheme() {
+        AdaptiveContent(
+            pets = MockPetRepository.getAllPets(),
+            isColumn = true,
+            addNewPetClicked = {},
+            onRemovePetClicked = {},
+            onPetClicked = {},
+            allPets = MockPetRepository.getAllPets(),
+            selectedOption = PetType.ALL,
+            sortOrder = SortOrder.NONE,
+            showOnlyFavorites = false,
+            onSetSelectedType = {},
+            onSetSortOrder = {},
+            onChangeToggleFavorites = {},
+            toggleFavoriteChanged = { _, _ -> },
+            isScreenExpanded = false
+        )
+    }
+}
+
+@Preview(
+    widthDp = 1200,
+    heightDp = 800,
+    showBackground = true
+)
+@Composable
+private fun AdaptiveContentExpandedPreview() {
+    PetCareTheme() {
+        AdaptiveContent(
+            pets = MockPetRepository.getAllPets(),
+            isColumn = true,
+            addNewPetClicked = {},
+            onRemovePetClicked = {},
+            onPetClicked = {},
+            allPets = MockPetRepository.getAllPets(),
+            selectedOption = PetType.ALL,
+            sortOrder = SortOrder.NONE,
+            showOnlyFavorites = false,
+            onSetSelectedType = {},
+            onSetSortOrder = {},
+            onChangeToggleFavorites = {},
+            toggleFavoriteChanged = { _, _ -> },
+            isScreenExpanded = true
+        )
+    }
+}

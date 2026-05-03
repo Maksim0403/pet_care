@@ -3,6 +3,7 @@ package com.petcare.app.pet_profile
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,7 +15,6 @@ import androidx.compose.ui.unit.dp
 import com.petcare.app.components.BackButton
 import com.petcare.app.components.PetImage
 import com.petcare.app.components.PetInfo
-import com.petcare.app.data.PetRepository
 import com.petcare.app.models.Pet
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -22,6 +22,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
+import com.petcare.app.data.MockPetRepository
 
 @Composable
 fun PetProfileScreen(modifier: Modifier = Modifier, petId: Int, onBackClicked: () -> Unit) {
@@ -31,21 +32,24 @@ fun PetProfileScreen(modifier: Modifier = Modifier, petId: Int, onBackClicked: (
 
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    when (state) {
-        is PetDetailState.Loading -> LoadingScreen(onBackClicked)
-        is PetDetailState.Success -> {
-            val successState = state as PetDetailState.Success
-            SuccessScreen(
-                modifier = modifier,
-                pet = successState.pet,
-                relatedPets = successState.relatedPets,
-                statistics = successState.statistics,
-                onBackClicked = onBackClicked
-            )
-        }
-        is PetDetailState.Error -> {
-            val errorState = state as PetDetailState.Error
-            ErrorScreen(errorState.message, onBackClicked)
+    Box(modifier = modifier) {
+        when (state) {
+            is PetDetailState.Loading -> LoadingScreen(onBackClicked)
+            is PetDetailState.Success -> {
+                val successState = state as PetDetailState.Success
+                PetProfile(
+                    modifier = modifier,
+                    pet = successState.pet,
+                    relatedPets = successState.relatedPets,
+                    statistics = successState.statistics,
+                    onBackClicked = onBackClicked
+                )
+            }
+
+            is PetDetailState.Error -> {
+                val errorState = state as PetDetailState.Error
+                ErrorScreen(errorState.message, onBackClicked)
+            }
         }
     }
 }
@@ -71,12 +75,13 @@ private fun LoadingScreen(onBackClicked: () -> Unit) {
 }
 
 @Composable
-private fun SuccessScreen(
+internal fun PetProfile(
     modifier: Modifier = Modifier,
     pet: Pet,
-    relatedPets: List<Pet>,
-    statistics: String,
-    onBackClicked: () -> Unit
+    relatedPets: List<Pet> = listOf(),
+    showBackButton: Boolean = true,
+    statistics: String = "",
+    onBackClicked: (() -> Unit) ? = null
 ) {
     Column(
         modifier = modifier
@@ -86,11 +91,12 @@ private fun SuccessScreen(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        BackButton(
-            modifier = Modifier
-                .align(Alignment.Start)
-                .clickable { onBackClicked() })
-
+        if (showBackButton) {
+            BackButton(
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .clickable { onBackClicked?.invoke() })
+        }
         PetImage(modifier = Modifier, imageResId = pet.imageResId ?: 0)
 
         PetInfo(pet = pet)
@@ -146,5 +152,5 @@ private fun ErrorScreen(message: String, onBackClicked: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 private fun PetProfileScreenPreview() {
-    PetProfileScreen(petId = PetRepository.getAllPets()[0].id, onBackClicked = {})
+    PetProfileScreen(petId = MockPetRepository.getAllPets()[0].id, onBackClicked = {})
 }
