@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 
 class ApiPetListViewModel(app: Application) : AndroidViewModel(app) {
 
-    private val apiRepository = ApiRepository()
+    private val apiRepository = ApiRepository(app.applicationContext)
 
     private val _pets = MutableStateFlow<List<Pet>>(emptyList())
     val pets: StateFlow<List<Pet>> = _pets.asStateFlow()
@@ -60,15 +60,13 @@ class ApiPetListViewModel(app: Application) : AndroidViewModel(app) {
                             _error.value = null
                         }
                         is ApiRepository.ApiResult.Error -> {
-                            if (result.cachedData != null) {
-                                // Show cached data with offline indicator
+                            if (result.cachedData != null && result.cachedData.isNotEmpty()) {
                                 _pets.value = result.cachedData
                                 _isOffline.value = true
                                 _isCachedData.value = true
-                                _error.value = "Offline mode - showing cached data"
+                                _error.value = null
                                 _isLoading.value = false
                             } else {
-                                // No cached data available
                                 _error.value = "Network error: ${result.exception.message}"
                                 _isLoading.value = false
                             }

@@ -6,11 +6,15 @@ import com.petcare.app.models.Pet
 import com.petcare.app.api.ApiClient
 import com.petcare.app.api.PetApiService
 import com.petcare.app.database.PetDatabase
+import com.petcare.app.database.PetEntity
+import com.petcare.app.database.PetMapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 @SuppressLint("StaticFieldLeak")
-class ApiRepository(private val apiService: PetApiService = ApiClient.petApiService) {
+class ApiRepository(private val context: Context, private val apiService: PetApiService = ApiClient.petApiService) {
+
+    private val petDao = PetDatabase.getDatabase(context).petDao()
     private var cachedPets: List<Pet>? = null
     private var cachedPetById: Map<String, Pet> = emptyMap()
 
@@ -26,13 +30,36 @@ class ApiRepository(private val apiService: PetApiService = ApiClient.petApiServ
                 val apiPets = response.body() ?: emptyList()
                 val domainPets = apiPets.map { it.toPet() }
                 cachedPets = domainPets
+                domainPets.forEach {
+                    android.util.Log.d("CACHE", "Trying to save: ${it.name} id=${it.id}")
+                    try {
+                        petDao.insertPet(
+                            PetEntity(
+                                id = it.id,
+                                name = it.name,
+                                type = it.type,
+                                age = it.age,
+                                weight = it.weight,
+                                breed = it.breed,
+                                imageResId = null,
+                                summary = it.summary,
+                                isFavorite = it.isFavorite
+                            )
+                        )
+                        android.util.Log.d("CACHE", "Saved OK: ${it.name}")
+                    } catch (e: Exception) {
+                        android.util.Log.e("CACHE", "Failed to save ${it.name}: ${e.message}")
+                    }
+                }
                 emit(ApiResult.Success(domainPets, isCached = false))
             } else {
                 val error = Exception("HTTP ${response.code()}: ${response.message()}")
-                emit(ApiResult.Error(error, cachedData = cachedPets))
+                val roomCache = petDao.getAllPetsOnce().map { PetMapper.toPet(it) }
+                emit(ApiResult.Error(error, cachedData = roomCache.ifEmpty { cachedPets }))
             }
         } catch (exception: Exception) {
-            emit(ApiResult.Error(exception, cachedData = cachedPets))
+            val roomCache = petDao.getAllPetsOnce().map { PetMapper.toPet(it) }
+            emit(ApiResult.Error(exception, cachedData = roomCache.ifEmpty { cachedPets }))
         }
     }
 

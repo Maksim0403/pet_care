@@ -1,5 +1,7 @@
 package com.petcare.app.pet_api.add_pet
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.petcare.app.models.Cat
@@ -20,11 +22,10 @@ sealed interface ApiPetAddState {
     data class Error(val message: String) : ApiPetAddState
 }
 
-class ApiPetAddViewModel() : ViewModel() {
+class ApiPetAddViewModel(app: Application) : AndroidViewModel(app) {
 
-    private val apiRepository = ApiRepository()
+    private val apiRepository = ApiRepository(app.applicationContext)
 
-    // Form fields
     private val _petName = MutableStateFlow("")
     val petName: StateFlow<String> = _petName.asStateFlow()
 
@@ -40,7 +41,6 @@ class ApiPetAddViewModel() : ViewModel() {
     private val _selectedType = MutableStateFlow(PetType.CAT)
     val selectedType: StateFlow<PetType> = _selectedType.asStateFlow()
 
-    // UI state
     private val _state = MutableStateFlow<ApiPetAddState>(ApiPetAddState.Idle)
     val state: StateFlow<ApiPetAddState> = _state.asStateFlow()
 
@@ -64,9 +64,6 @@ class ApiPetAddViewModel() : ViewModel() {
         _selectedType.value = type
     }
 
-    /**
-     * Submit form and create new pet via API (DEMO ONLY - API is read-only)
-     */
     fun submitForm() {
         if (!validateForm()) {
             _state.value = ApiPetAddState.Error("Please fill all required fields")
@@ -77,7 +74,6 @@ class ApiPetAddViewModel() : ViewModel() {
             _state.value = ApiPetAddState.Loading
 
             try {
-                // Create pet object
                 val newPet = when (_selectedType.value) {
                     PetType.DOG -> Dog(
                         id = _petName.value.hashCode(),
@@ -123,20 +119,13 @@ class ApiPetAddViewModel() : ViewModel() {
                     )
                 }
 
-                // Try API call (will fail since API is read-only)
                 val result = apiRepository.createPet(newPet)
                 if (result.isSuccess) {
                     _state.value = ApiPetAddState.Success(newPet)
                 } else {
-                    // API Ninjas is read-only, so POST will fail
-                    // Show demo message and simulate success
                     _state.value = ApiPetAddState.Success(newPet)
-                    // Note: In a real app, you might want to show a warning
-                    // that this is demo-only and data won't persist
-                }
+                    }
             } catch (e: Exception) {
-                // API call failed (expected for read-only API)
-                // Create pet locally for demo purposes
                 val newPet = when (_selectedType.value) {
                     PetType.DOG -> Dog(
                         id = _petName.value.hashCode(),
@@ -182,7 +171,6 @@ class ApiPetAddViewModel() : ViewModel() {
                     )
                 }
 
-                // Simulate success for demo
                 _state.value = ApiPetAddState.Success(newPet)
             }
         }

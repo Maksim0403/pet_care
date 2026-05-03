@@ -302,7 +302,6 @@ private fun ApiPetCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Pet image
             PetImage(
                 modifier = Modifier.size(80.dp),
                 imageResId = pet.imageResId ?: 0
@@ -310,7 +309,6 @@ private fun ApiPetCard(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            // Pet info
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -330,7 +328,6 @@ private fun ApiPetCard(
                 }
             }
 
-            // Delete button
             IconButton(
                 onClick = onDelete,
                 enabled = !isDeleting
@@ -346,7 +343,6 @@ private fun ApiPetCard(
                 }
             }
 
-            // View button
             Button(
                 onClick = onClick,
                 modifier = Modifier.padding(start = 8.dp),

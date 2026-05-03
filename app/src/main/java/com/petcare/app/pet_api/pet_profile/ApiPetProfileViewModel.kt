@@ -1,8 +1,10 @@
 package com.petcare.app.pet_api.pet_profile
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.petcare.app.models.Pet
 import com.petcare.app.pet_api.ApiRepository
 import kotlinx.coroutines.delay
@@ -20,9 +22,9 @@ sealed interface ApiPetDetailState {
     data class Error(val message: String) : ApiPetDetailState
 }
 
-class ApiPetProfileViewModel(private val petIdentifier: String) : ViewModel() {
+class ApiPetProfileViewModel(app: Application, private val petIdentifier: String) : ViewModel() {
 
-    private val apiRepository = ApiRepository()
+    private val apiRepository = ApiRepository(app.applicationContext)
 
     private val _state = MutableStateFlow<ApiPetDetailState>(ApiPetDetailState.Loading)
     val state: StateFlow<ApiPetDetailState> = _state
@@ -86,12 +88,9 @@ class ApiPetProfileViewModel(private val petIdentifier: String) : ViewModel() {
     }
 
     class Factory(private val petIdentifier: String) : ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(ApiPetProfileViewModel::class.java)) {
-                return ApiPetProfileViewModel(petIdentifier) as T
-            }
-            throw IllegalArgumentException("Unknown ViewModel class")
+        override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+            val app = extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]!!
+            return ApiPetProfileViewModel(app, petIdentifier) as T
         }
     }
 }

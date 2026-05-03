@@ -13,14 +13,11 @@ import retrofit2.http.Query
 
 interface PetApiService {
 
-
     @GET("pets")
     suspend fun getAllPets(): Response<List<MockPetResponse>>
 
-
     @GET("pets")
     suspend fun searchPets(@Query("name") name: String): Response<List<MockPetResponse>>
-
 
     @GET("pets/{id}")
     suspend fun getPetById(@Path("id") petId: String): Response<MockPetResponse>
@@ -28,8 +25,7 @@ interface PetApiService {
     @POST("pets")
     suspend fun createPet(@Body request: MockPetRequest): Response<MockPetResponse>
 
-
-    @DELETE("pets/{id}")
+    @DELETE("petsу/{id}")
     suspend fun deletePet(@Path("id") petId: String): Response<Unit>
 
     @PUT("pets/{id}")

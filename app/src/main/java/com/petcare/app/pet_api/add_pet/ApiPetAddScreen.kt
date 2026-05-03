@@ -67,7 +67,6 @@ fun ApiPetAddScreen(
             Spacer(modifier = Modifier.weight(1f))
         }
 
-        // API Source notice
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(

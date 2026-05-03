@@ -46,11 +46,11 @@ data class MockPetResponse(
 ) {
 
     fun toPet(): Pet {
-        val petType = when (type?.lowercase()) {  // ← safe call
+        val petType = when (type?.lowercase()) {
             "dog" -> PetType.DOG
             "cat" -> PetType.CAT
             "bird", "parrot" -> PetType.BIRD
-            else -> PetType.CAT  // ← safe default instead of ALL
+            else -> PetType.CAT
         }
 
         return when (petType) {
@@ -123,15 +123,12 @@ data class MockPetResponse(
     }
 }
 
-/**
- * MockAPI Pet Request Model for POST/PUT operations
- */
 data class MockPetRequest(
     @SerializedName("name")
     val name: String,
 
     @SerializedName("type")
-    val type: String, // "dog", "cat", "bird"
+    val type: String,
 
     @SerializedName("age")
     val age: Int = 1,
