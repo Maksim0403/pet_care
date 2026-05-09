@@ -1,5 +1,6 @@
 package com.petcare.app.mainscreen.adaptive
 
+import android.net.Uri
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.PaddingValues
@@ -8,8 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationDrawerItem
@@ -45,7 +44,9 @@ fun AdaptiveNavigationLayout(
     currentRoute: String?,
     showBottomBar: Boolean,
     settingsDataStore: SettingsDataStore,
-    lifecycleScope: LifecycleCoroutineScope
+    lifecycleScope: LifecycleCoroutineScope,
+    imageUri: Uri? = null,
+    onUserImageCLicked: (() -> Unit)? = null,
 ) {
 
     val activity = LocalContext.current as ComponentActivity
@@ -66,7 +67,9 @@ fun AdaptiveNavigationLayout(
                 }
             },
             settingsDataStore = settingsDataStore,
-            isScreenExpanded = windowSizeClass.widthSizeClass ==  WindowWidthSizeClass.Expanded
+            imageUri = imageUri,
+            isScreenExpanded = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded,
+            onUserImageCLicked = onUserImageCLicked
         )
     }
 

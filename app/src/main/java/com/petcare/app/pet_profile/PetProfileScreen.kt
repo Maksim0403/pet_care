@@ -45,6 +45,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.petcare.app.components.BackButton
 import com.petcare.app.components.PetImage
+import com.petcare.app.components.PetImageSource
 import com.petcare.app.components.PetInfo
 import com.petcare.app.data.MockPetRepository
 import com.petcare.app.models.Cat
@@ -52,9 +53,6 @@ import com.petcare.app.models.Dog
 import com.petcare.app.models.Parrot
 import com.petcare.app.models.Pet
 
-// ─────────────────────────────────────────────────────────────────
-//  Screen entry point
-// ─────────────────────────────────────────────────────────────────
 
 @Composable
 fun PetProfileScreen(modifier: Modifier = Modifier, petId: Int, onBackClicked: () -> Unit) {
@@ -79,9 +77,8 @@ fun PetProfileScreen(modifier: Modifier = Modifier, petId: Int, onBackClicked: (
     }
 }
 
-// ─────────────────────────────────────────────────────────────────
 //  PetProfile — contains Завдання 2 expandable section
-// ─────────────────────────────────────────────────────────────────
+
 
 @Composable
 internal fun PetProfile(
@@ -109,13 +106,13 @@ internal fun PetProfile(
             )
         }
 
-        PetImage(modifier = Modifier, imageResId = pet.imageResId ?: 0)
+        PetImage(modifier = Modifier,   source = PetImageSource.Res(pet.imageResId ?: 0),)
         PetInfo(pet = pet)
 
         Text(text = "Statistics", style = MaterialTheme.typography.headlineSmall)
         Text(text = statistics, style = MaterialTheme.typography.bodyMedium)
 
-        // ── Завдання 2 — Animated expandable section ──────────────
+        // Завдання 2  Animated expandable section
         ExpandableDetailsSection(pet = pet)
 
         // Related pets
@@ -128,9 +125,7 @@ internal fun PetProfile(
     }
 }
 
-// ─────────────────────────────────────────────────────────────────
 //  Завдання 2 — Expandable section with animated header + content
-// ─────────────────────────────────────────────────────────────────
 
 @Composable
 private fun ExpandableDetailsSection(pet: Pet) {
@@ -206,7 +201,6 @@ private fun ExpandableDetailsSection(pet: Pet) {
                 DetailRow(label = "Favorite", value = if (pet.isFavorite) "Yes ★" else "No")
                 DetailRow(label = "ID", value = "#${pet.id}")
 
-                // Type-specific extra fields
                 when (pet) {
                     is Dog -> {
                         HorizontalDivider()
@@ -246,9 +240,6 @@ private fun DetailRow(label: String, value: String) {
     }
 }
 
-// ─────────────────────────────────────────────────────────────────
-//  Loading / Error screens
-// ─────────────────────────────────────────────────────────────────
 
 @Composable
 private fun LoadingScreen(onBackClicked: () -> Unit) {
@@ -292,9 +283,6 @@ private fun ErrorScreen(message: String, onBackClicked: () -> Unit) {
     }
 }
 
-// ─────────────────────────────────────────────────────────────────
-//  Previews
-// ─────────────────────────────────────────────────────────────────
 
 @Preview(showBackground = true)
 @Composable

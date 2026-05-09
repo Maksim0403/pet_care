@@ -40,7 +40,7 @@ internal fun PetListItem(
         ) {
             PetImage(
                 modifier = Modifier.padding(horizontal = 10.dp),
-                animal.imageResId ?: 0,
+                source = PetImageSource.Res(animal.imageResId ?: 0),
                 size = 120
             )
             Column(modifier = Modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {

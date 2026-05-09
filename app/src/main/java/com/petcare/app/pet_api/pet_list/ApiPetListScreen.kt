@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.petcare.app.components.PetImage
+import com.petcare.app.components.PetImageSource
 import com.petcare.app.components.PetTitle
 import com.petcare.app.models.Pet
 
@@ -304,7 +305,7 @@ private fun ApiPetCard(
         ) {
             PetImage(
                 modifier = Modifier.size(80.dp),
-                imageResId = pet.imageResId ?: 0
+                source = PetImageSource.Res(pet.imageResId ?: 0),
             )
 
             Spacer(modifier = Modifier.width(16.dp))

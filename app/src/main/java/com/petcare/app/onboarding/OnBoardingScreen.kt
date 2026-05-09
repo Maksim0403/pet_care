@@ -25,6 +25,7 @@ import com.petcare.app.R
 import com.petcare.app.components.PetButton
 import com.petcare.app.components.PetHeader
 import com.petcare.app.components.PetImage
+import com.petcare.app.components.PetImageSource
 import com.petcare.app.navigation.Screen
 
 
@@ -64,7 +65,7 @@ internal fun OnBoardingScreen(
         ) {
             PetImage(
                 modifier = Modifier.padding(horizontal = 10.dp),
-                R.drawable.dog_default,
+                source = PetImageSource.Res(R.drawable.dog_default),
                 size = 120
             )
             Spacer(Modifier.height(20.dp))

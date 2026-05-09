@@ -18,6 +18,7 @@ class SettingsDataStore(private val context: Context) {
         private val MEASUREMENT_UNIT_KEY = stringPreferencesKey("measurement_unit")
         private val SORT_MODE_KEY = stringPreferencesKey("sort_mode")
         private val LANGUAGE_KEY = stringPreferencesKey("language")
+        private val USER_IMAGE_KEY = stringPreferencesKey("user_image")
     }
 
 
@@ -44,6 +45,11 @@ class SettingsDataStore(private val context: Context) {
             preferences[LANGUAGE_KEY] ?: "en"
         }
 
+    val userImage: Flow<String?> = context.dataStore.data.map {
+        val value = it[USER_IMAGE_KEY]
+        if (value == "null" || value.isNullOrBlank()) null else value
+    }
+
 
     suspend fun saveUserName(name: String) {
         context.dataStore.edit { preferences ->
@@ -69,6 +75,12 @@ class SettingsDataStore(private val context: Context) {
     suspend fun saveLanguage(lang: String) {
         context.dataStore.edit { preferences ->
             preferences[LANGUAGE_KEY] = lang
+        }
+    }
+
+    suspend fun saveUserImage(image: String) {
+        context.dataStore.edit { preferences ->
+            preferences[USER_IMAGE_KEY] = image
         }
     }
 

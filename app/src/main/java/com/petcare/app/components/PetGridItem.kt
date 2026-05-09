@@ -86,7 +86,7 @@ internal fun PetGridItem(
 
         PetImage(
             modifier = Modifier.padding(vertical = 10.dp),
-            animal.imageResId ?: 0,
+            source = PetImageSource.Res(animal.imageResId ?: 0),
             size = 150
         )
 

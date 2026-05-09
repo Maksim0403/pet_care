@@ -1,5 +1,6 @@
 package com.petcare.app.user_profile
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.petcare.app.data.SettingsDataStore
@@ -7,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import androidx.core.net.toUri
 
 class UserProfileViewModel(
     private val settingsDataStore: SettingsDataStore,
@@ -24,6 +26,9 @@ class UserProfileViewModel(
 
     private val _languageInput = MutableStateFlow("en")
     val languageInput: StateFlow<String> = _languageInput.asStateFlow()
+
+    private val _userImage = MutableStateFlow<Uri?>(null)
+    val userImage: StateFlow<Uri?> = _userImage.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -49,6 +54,12 @@ class UserProfileViewModel(
                 _languageInput.value = lang
             }
         }
+
+        viewModelScope.launch {
+            settingsDataStore.userImage.collect { image ->
+                _userImage.value = image?.toUri()
+            }
+        }
     }
 
     fun updateNameInput(newName: String) {
@@ -67,15 +78,17 @@ class UserProfileViewModel(
         _languageInput.value = lang
     }
 
-    fun saveAllSettings() {
+    fun saveAllSettings(userImageUri: Uri? = null) {
         viewModelScope.launch {
             // Save each setting to DataStore
             settingsDataStore.saveUserName(_nameInput.value)
             settingsDataStore.saveMeasurementUnit(_measurementUnitInput.value)
             settingsDataStore.saveSortMode(_sortModeInput.value)
             settingsDataStore.saveLanguage(_languageInput.value)
+            userImageUri?.let {
+                settingsDataStore.saveUserImage(userImageUri.toString())
+            }
 
-            // Also call the callback to update parent
             onNameChanged(_nameInput.value)
         }
     }

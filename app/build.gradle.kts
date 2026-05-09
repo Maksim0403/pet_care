@@ -87,4 +87,6 @@ dependencies {
     // Adaptive design
     implementation("androidx.compose.material3:material3-window-size-class")
     implementation("androidx.compose.foundation:foundation:1.6.7")
+    // Location
+    implementation("com.google.android.gms:play-services-location:21.3.0")
 }

@@ -25,6 +25,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.petcare.app.components.BackButton
 import com.petcare.app.components.PetImage
+import com.petcare.app.components.PetImageSource
 import com.petcare.app.models.Pet
 
 @Composable
@@ -108,7 +109,7 @@ private fun ApiSuccessScreen(
         ) {
             PetImage(
                 modifier = Modifier.size(200.dp),
-                imageResId = pet.imageResId ?: 0
+                source = PetImageSource.Res(pet.imageResId ?: 0),
             )
         }
 

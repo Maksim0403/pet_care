@@ -26,7 +26,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.petcare.app.R
-import com.petcare.app.data.PetRepository
+import com.petcare.app.components.PetImage
+import com.petcare.app.components.PetImageSource
 import com.petcare.app.models.Cat
 import com.petcare.app.models.Dog
 import com.petcare.app.models.Parrot
@@ -69,11 +70,11 @@ internal fun AddNewPetScreen(
             )
         }
 
-        _root_ide_package_.com.petcare.app.components.PetImage(
+        PetImage(
             modifier = Modifier
                 .padding(horizontal = 10.dp)
                 .align(Alignment.CenterHorizontally),
-            petImage,
+            PetImageSource.Res(petImage),
             size = 300
         )
 
@@ -93,7 +94,11 @@ internal fun AddNewPetScreen(
                             unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     )
-                    Text(text = pet.title, modifier = Modifier.padding(10.dp), color = MaterialTheme.colorScheme.onBackground)
+                    Text(
+                        text = pet.title,
+                        modifier = Modifier.padding(10.dp),
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
                 }
             }
         }

@@ -16,4 +16,6 @@ sealed class Screen(val route: String) {
     }
 
     data object ApiPetAdd : Screen("api_pet_add")
+
+    data object Location : Screen("location")
 }

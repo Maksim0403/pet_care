@@ -1,8 +1,11 @@
 package com.petcare.app.user_profile
 
 import android.content.res.Configuration
+import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,14 +25,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.petcare.app.R
 import com.petcare.app.components.PetButton
 import com.petcare.app.components.PetHeader
+import com.petcare.app.components.PetImage
+import com.petcare.app.components.PetImageSource
 import com.petcare.app.components.PetTextField
 import com.petcare.app.data.SettingsDataStore
 
@@ -37,7 +44,10 @@ import com.petcare.app.data.SettingsDataStore
 fun UserProfileScreen(
     modifier: Modifier = Modifier,
     name: String,
+    imageUri: Uri? = null,
     onNameChanged: (String) -> Unit,
+    onUserImageCLicked: (() -> Unit)? = null,
+    openLocation: () -> Unit,
     settingsDataStore: SettingsDataStore
 ) {
     val viewModel = viewModel<UserProfileViewModel>(
@@ -49,6 +59,7 @@ fun UserProfileScreen(
     val measurementUnit by viewModel.measurementUnitInput.collectAsStateWithLifecycle()
     val sortMode by viewModel.sortModeInput.collectAsStateWithLifecycle()
     val language by viewModel.languageInput.collectAsStateWithLifecycle()
+    val userImage by viewModel.userImage.collectAsStateWithLifecycle()
 
     // Dropdown states for better UX
     var showMeasurementDropdown by remember { mutableStateOf(false) }
@@ -65,17 +76,34 @@ fun UserProfileScreen(
     ) {
         Spacer(Modifier.height(16.dp))
 
-        // Header
         PetHeader(text = "Pet Care", Modifier)
         PetHeader(text = "Settings", Modifier)
 
-        // App info
         Text(text = "v.0.6", color = MaterialTheme.colorScheme.onBackground)
         Text(text = "Pet Care Application", color = MaterialTheme.colorScheme.onBackground)
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        // ========== USERNAME SETTING ==========
+        //  USER IMAGE
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            val imageFromSettings = userImage
+            val imageSource = when {
+                imageUri != null -> PetImageSource.CameraUri(imageUri)
+                imageFromSettings != null -> PetImageSource.CameraUri(imageFromSettings)
+                else -> PetImageSource.Res(R.drawable.ic_user)
+            }
+
+            PetImage(
+                modifier = Modifier
+                    .clickable {
+                        onUserImageCLicked?.invoke()
+                    },
+                source = imageSource,
+                size = 200
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        // USERNAME SETTING
         PetTextField(
             text = nameInput,
             title = "Username",
@@ -85,7 +113,7 @@ fun UserProfileScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // ========== MEASUREMENT UNIT SETTING ==========
+        // MEASUREMENT UNIT SETTING
         Text(
             text = "Measurement Unit",
             style = MaterialTheme.typography.bodyMedium,
@@ -122,7 +150,7 @@ fun UserProfileScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // ========== SORT MODE SETTING ==========
+        // SORT MODE SETTING
         Text(
             text = "Default Sort Mode",
             style = MaterialTheme.typography.bodyMedium,
@@ -159,7 +187,7 @@ fun UserProfileScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // ========== LANGUAGE SETTING ==========
+        // LANGUAGE SETTING
         Text(
             text = "Language",
             style = MaterialTheme.typography.bodyMedium,
@@ -211,9 +239,16 @@ fun UserProfileScreen(
             color = MaterialTheme.colorScheme.primary,
             textColor = MaterialTheme.colorScheme.onPrimary,
             enabled = true,
-            onClicked = { viewModel.saveAllSettings() }
+            onClicked = { viewModel.saveAllSettings(imageUri) }
         )
-
+        Spacer(modifier = Modifier.height(16.dp))
+        PetButton(
+            title = "Open location",
+            color = MaterialTheme.colorScheme.surface,
+            textColor = MaterialTheme.colorScheme.onPrimary,
+            enabled = true,
+            onClicked = { openLocation() }
+        )
         Spacer(modifier = Modifier.height(16.dp))
     }
 }
@@ -227,6 +262,7 @@ private fun UserProfileScreenPreview() {
         UserProfileScreen(
             name = "UserName",
             onNameChanged = {},
+            openLocation = {},
             settingsDataStore = SettingsDataStore(androidx.compose.ui.platform.LocalContext.current)
         )
     }

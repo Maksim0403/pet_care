@@ -1,5 +1,6 @@
 package com.petcare.app.navigation
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -17,6 +18,7 @@ import com.petcare.app.pet_api.pet_list.ApiPetListScreen
 import com.petcare.app.pet_api.pet_profile.ApiPetProfileScreen
 import com.petcare.app.data.SettingsDataStore
 import com.petcare.app.enter_name.EnterNameScreen
+import com.petcare.app.location.LocationScreen
 import com.petcare.app.models.Pet
 import com.petcare.app.onboarding.OnBoardingScreen
 import com.petcare.app.pet_api.add_pet.ApiPetAddScreen
@@ -29,24 +31,23 @@ import kotlinx.coroutines.delay
 fun NavGraph(
     navController: NavHostController,
     modifier: Modifier,
+    imageUri: Uri? = null,
     onPetAdded: (Pet) -> Unit,
+    onUserImageCLicked: (() -> Unit)? = null,
     settingsDataStore: SettingsDataStore,
     isScreenExpanded: Boolean = false,
 ) {
     var isLoading by remember { mutableStateOf(true) }
     var name by remember { mutableStateOf("") }
 
-    // Check if user name exists in DataStore
-    // This determines whether to show onboarding
+
     var hasExistingUser by remember { mutableStateOf(false) }
     var startDestination by remember { mutableStateOf(Screen.Onboarding.route) }
 
     LaunchedEffect(Unit) {
-        // Check if user has already set their name
         settingsDataStore.hasUserName.collect { hasName ->
             hasExistingUser = hasName
-            // If user exists, skip onboarding and go directly to PetList
-            // Otherwise, show onboarding
+
             startDestination = if (hasName) Screen.PetList.route else Screen.Onboarding.route
         }
     }
@@ -134,11 +135,20 @@ fun NavGraph(
             UserProfileScreen(
                 modifier = modifier,
                 name = name,
+                imageUri = imageUri,
                 onNameChanged = { newName ->
                     name = newName
                 },
+                onUserImageCLicked = onUserImageCLicked,
+                openLocation = {
+                    navController.navigate(Screen.Location.route)
+                },
                 settingsDataStore = settingsDataStore
             )
+        }
+
+        composable(route = Screen.Location.route) {
+            LocationScreen(modifier)
         }
 
         composable(Screen.ApiPetList.route) {
