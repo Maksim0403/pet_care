@@ -80,4 +80,5 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.6.0")
     // Adaptive design
     implementation("androidx.compose.material3:material3-window-size-class")
+    implementation("androidx.compose.foundation:foundation:1.6.7")
 }

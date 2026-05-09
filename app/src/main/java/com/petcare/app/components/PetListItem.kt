@@ -27,10 +27,10 @@ import com.petcare.app.models.Pet
 internal fun PetListItem(
     animal: Pet,
     onRemoveClicked: () -> Unit,
-    onClick: () -> Unit,
-    onFavoriteClicked: (() -> Unit)? = null
+    onFavoriteClicked: (() -> Unit)? = null,
+    modifier: Modifier = Modifier
 ) {
-    Column(modifier = Modifier.fillMaxWidth().clickable{onClick()}) {
+    Column(modifier = modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -55,7 +55,6 @@ internal fun PetListItem(
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(5.dp)
                     ) {
-                        // NEW: Favorite button
                         if (onFavoriteClicked != null) {
                             val favoriteIcon = if (animal.isFavorite)
                                 R.drawable.ic_favorite_filled
@@ -115,7 +114,10 @@ internal fun PetListItem(
 
 
         }
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, modifier = Modifier.height(2.dp))
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.outlineVariant,
+            modifier = Modifier.height(2.dp)
+        )
     }
 
 }
@@ -132,6 +134,6 @@ private fun PetListItemPreview() {
             breed = "Tabby",
             imageResId = R.drawable.cat,
             summary = "Tabby cats are common domestic cats known for their striped coat patterns and playful personality."
-        ), {},{}
+        ), {}, {}
     )
 }

@@ -1,6 +1,5 @@
 package com.petcare.app.components
 
-import androidx.benchmark.traceprocessor.Row
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,7 +16,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,22 +23,26 @@ import androidx.compose.ui.unit.dp
 import com.petcare.app.R
 import com.petcare.app.models.Cat
 import com.petcare.app.models.Pet
-import com.petcare.app.ui.theme.ColorPrimaryLight
 
 @Composable
 internal fun PetGridItem(
     animal: Pet,
     onRemoveClicked: () -> Unit,
     onClick: () -> Unit,
-    onFavoriteClicked: (() -> Unit)? = null
+    onFavoriteClicked: (() -> Unit)? = null,
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceBright, shape = RoundedCornerShape(10.dp))
-            .border(width = 1.dp, color = MaterialTheme.colorScheme.outlineVariant, shape = RoundedCornerShape(10.dp))
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outlineVariant,
+                shape = RoundedCornerShape(10.dp)
+            )
             .padding(10.dp)
-            .clickable{onClick()},
+            .clickable { onClick() },
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

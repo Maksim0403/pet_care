@@ -22,6 +22,10 @@ class MockPetListViewModel(private val settingsDataStore: SettingsDataStore) : V
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading
 
+    // Завдання 4 — окремий стан для pull-to-refresh
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
     private val _selectedType = MutableStateFlow(PetType.ALL)
     val selectedType: StateFlow<PetType> = _selectedType.asStateFlow()
 
@@ -45,11 +49,7 @@ class MockPetListViewModel(private val settingsDataStore: SettingsDataStore) : V
         _showOnlyFavorites
     ) { pets, type, sort, showFavOnly ->
         var filtered = if (type == PetType.ALL) pets else pets.filter { it.type == type }
-
-        if (showFavOnly) {
-            filtered = filtered.filter { it.isFavorite }
-        }
-
+        if (showFavOnly) filtered = filtered.filter { it.isFavorite }
         when (sort) {
             SortOrder.NONE -> filtered
             SortOrder.NAME -> filtered.sortedBy { it.name }
@@ -79,8 +79,18 @@ class MockPetListViewModel(private val settingsDataStore: SettingsDataStore) : V
     private fun loadPets() {
         viewModelScope.launch {
             _isLoading.value = true
-            delay(750) // 0.75 seconds
+            delay(750)
             _isLoading.value = false
+        }
+    }
+
+    // Завдання 4 — pull-to-refresh: жест → ViewModel → Repository → API
+    fun refresh() {
+        viewModelScope.launch {
+            _isRefreshing.value = true
+            delay(1200)                     // імітація мережевого запиту
+            MockPetRepository.refresh()     // Repository перезавантажує дані
+            _isRefreshing.value = false
         }
     }
 
@@ -97,21 +107,16 @@ class MockPetListViewModel(private val settingsDataStore: SettingsDataStore) : V
     }
 
     fun removePet(pet: Pet) {
-        viewModelScope.launch {
-            MockPetRepository.removePet(pet)
-        }
+        viewModelScope.launch { MockPetRepository.removePet(pet) }
     }
 
     fun toggleFavorite(petId: Int, currentState: Boolean) {
-        viewModelScope.launch {
-            MockPetRepository.toggleFavorite(petId, !currentState)
-        }
+        viewModelScope.launch { MockPetRepository.toggleFavorite(petId, !currentState) }
     }
 
     companion object {
-        class Factory(
-            private val settingsDataStore: SettingsDataStore,
-        ) : ViewModelProvider.Factory {
+        class Factory(private val settingsDataStore: SettingsDataStore) :
+            ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 if (modelClass.isAssignableFrom(MockPetListViewModel::class.java)) {
