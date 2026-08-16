@@ -19,6 +19,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.semantics
 import com.petcare.app.R
 import com.petcare.app.models.Cat
 import com.petcare.app.models.Pet
@@ -35,13 +37,15 @@ internal fun PetListItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surfaceBright)
+                .semantics(mergeDescendants = true) {}
                 .padding(vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             PetImage(
                 modifier = Modifier.padding(horizontal = 10.dp),
                 source = PetImageSource.Res(animal.imageResId ?: 0),
-                size = 120
+                size = 120,
+                contentDescription = null // Decorative here as name/info is read next
             )
             Column(modifier = Modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Row(
@@ -66,9 +70,12 @@ internal fun PetListItem(
                                 modifier = Modifier
                                     .size(36.dp)
                                     .padding(end = 2.dp)
-                                    .clickable { onFavoriteClicked() },
+                                    .clickable(
+                                        onClick = { onFavoriteClicked() },
+                                        role = Role.Button
+                                    ),
                                 painter = favoritePainter,
-                                contentDescription = if (animal.isFavorite) "Remove from favorites" else "Add to favorites",
+                                contentDescription = if (animal.isFavorite) "Remove ${animal.name} from favorites" else "Add ${animal.name} to favorites",
                                 contentScale = ContentScale.Fit,
                             )
                         }
@@ -79,9 +86,12 @@ internal fun PetListItem(
                             modifier = Modifier
                                 .size(36.dp)
                                 .padding(end = 5.dp)
-                                .clickable { onRemoveClicked() },
+                                .clickable(
+                                    onClick = { onRemoveClicked() },
+                                    role = Role.Button
+                                ),
                             painter = painter,
-                            contentDescription = null,
+                            contentDescription = "Remove ${animal.name}",
                             contentScale = ContentScale.Fit,
                         )
                     }

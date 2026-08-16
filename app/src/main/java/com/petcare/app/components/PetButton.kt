@@ -14,7 +14,7 @@ import com.petcare.app.ui.theme.ButtonColor
 import com.petcare.app.ui.theme.ButtonDisabledColor
 
 @Composable
-internal fun PetButton(title: String, color: Color = ButtonColor,disabledColor: Color = ButtonDisabledColor, textColor: Color = Color.White, enabled: Boolean = true, onClicked: () -> Unit) {
+internal fun PetButton(modifier: Modifier = Modifier, title: String, color: Color = ButtonColor,disabledColor: Color = ButtonDisabledColor, textColor: Color = Color.White, enabled: Boolean = true, onClicked: () -> Unit) {
     Button(
         enabled = enabled,
         onClick = { onClicked() },
@@ -23,7 +23,7 @@ internal fun PetButton(title: String, color: Color = ButtonColor,disabledColor: 
             disabledContainerColor=disabledColor
         ),
         shape = RoundedCornerShape(16.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
         Text(
             text = title,
@@ -32,8 +32,8 @@ internal fun PetButton(title: String, color: Color = ButtonColor,disabledColor: 
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun PetButtonPreview() {
-    PetButton("Title", onClicked = {})
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun PetButtonPreview() {
+//    PetButton("Title", onClicked = {})
+//}

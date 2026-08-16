@@ -2,13 +2,17 @@
 agp = "9.0.1"
 coreKtx = "1.10.1"
 junit = "4.13.2"
-junitVersion = "1.1.5"
-espressoCore = "3.5.1"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+testMonitor = "1.7.1"
+testRunner = "1.6.1"
+androidx-test-runner = "1.6.1"
+androidx-test-rules = "1.6.0"
 lifecycleRuntimeKtx = "2.10.0"
 activityCompose = "1.8.0"
 kotlin = "2.3.10"
 ksp = "2.3.10-1.0.30"
-composeBom = "2024.09.00"
+composeBom = "2024.12.01"
 material3 = "1.4.0"
 roomVersion = "2.8.4"
 runtime = "1.10.5"
@@ -25,6 +29,9 @@ androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-test-monitor = { group = "androidx.test", name = "monitor", version.ref = "testMonitor" }
+androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "testRunner" }
+androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "testRunner" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }

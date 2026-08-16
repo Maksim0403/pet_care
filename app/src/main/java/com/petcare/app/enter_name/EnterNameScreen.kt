@@ -17,6 +17,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,6 +51,7 @@ internal fun EnterNameScreen(
         Spacer(modifier = Modifier.height(50.dp))
 
         PetTextField(
+            modifier = Modifier.testTag("username_field"),
             text = nameInput,
             title = "Username",
             keyboardType = KeyboardType.Text,
@@ -59,6 +61,7 @@ internal fun EnterNameScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         PetButton(
+            modifier = Modifier.testTag("submit_name_button"),
             title = "Submit",
             color = MaterialTheme.colorScheme.primary,
             disabledColor = MaterialTheme.colorScheme.onSurfaceVariant,

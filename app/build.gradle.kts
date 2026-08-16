@@ -22,11 +22,12 @@ android {
     defaultConfig {
         applicationId = "com.petcare.app"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments["androidx.compose.ui.test.espresso.idling.resource.enabled"] = "false"
     }
 
     buildTypes {
@@ -64,29 +65,34 @@ dependencies {
     implementation(libs.androidx.benchmark.traceprocessor)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.adaptive)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     implementation("androidx.compose.material:material-icons-extended")
-    // DataStore Preferences for persistent storage
     implementation("androidx.datastore:datastore-preferences:1.2.1")
-    // Room for local database
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
-    // Retrofit for API calls
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation("io.coil-kt:coil-compose:2.6.0")
-    // Adaptive design
     implementation("androidx.compose.material3:material3-window-size-class")
     implementation("androidx.compose.foundation:foundation:1.6.7")
-    // Location
     implementation("com.google.android.gms:play-services-location:21.3.0")
+
+    // Unit tests
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("io.mockk:mockk:1.13.10")
+
+    // UI / Instrumentation tests
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
+    // removed espresso-core to fix InputManager crash
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+
+    // Debug
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }

@@ -17,6 +17,10 @@ import com.petcare.app.ui.theme.ButtonColor
 import com.petcare.app.ui.theme.ColorBackground
 import com.petcare.app.ui.theme.ColorPrimary
 
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+
 @Composable
 fun PetTypeOption(
     modifier: Modifier = Modifier,
@@ -38,7 +42,10 @@ fun PetTypeOption(
         modifier = modifier
             .background(color = backgroundColor, shape = RoundedCornerShape(10.dp))
             .border(1.dp, MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(10.dp))
-            .clickable { onClick.invoke() }
+            .clickable(
+                onClick = { onClick.invoke() },
+                role = Role.RadioButton
+            )
     ) {
         Text(
             text = text,

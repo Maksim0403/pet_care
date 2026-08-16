@@ -22,9 +22,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import com.petcare.app.R
 import com.petcare.app.components.PetImage
 import com.petcare.app.components.PetImageSource
@@ -49,7 +53,7 @@ internal fun AddNewPetScreen(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Spacer(Modifier.height(16.dp))
-        _root_ide_package_.com.petcare.app.components.PetHeader(text = "Add new pet", Modifier)
+        com.petcare.app.components.PetHeader(text = "Add new pet", Modifier)
         val petOptions = listOf(
             PetType.CAT,
             PetType.DOG,
@@ -75,7 +79,8 @@ internal fun AddNewPetScreen(
                 .padding(horizontal = 10.dp)
                 .align(Alignment.CenterHorizontally),
             PetImageSource.Res(petImage),
-            size = 300
+            size = 300,
+            contentDescription = "Preview image of a ${selectedPet.title}"
         )
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
@@ -83,12 +88,16 @@ internal fun AddNewPetScreen(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .clickable { selectedPet = pet }
+                        .clickable(
+                            onClick = { selectedPet = pet },
+                            role = Role.RadioButton
+                        )
+                        .semantics(mergeDescendants = true) {}
                         .padding(8.dp)
                 ) {
                     RadioButton(
                         selected = (pet == selectedPet),
-                        onClick = { selectedPet = pet },
+                        onClick = null, // Handled by Row for larger touch target
                         colors = RadioButtonDefaults.colors(
                             selectedColor = MaterialTheme.colorScheme.primary,
                             unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant
@@ -105,18 +114,21 @@ internal fun AddNewPetScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        _root_ide_package_.com.petcare.app.components.PetTextField(
+        com.petcare.app.components.PetTextField(
+            modifier = Modifier.testTag("pet_name_field"),
             text = petName,
             title = "Name",
             keyboardType = KeyboardType.Text,
             onTextChange = { petName = it })
-        _root_ide_package_.com.petcare.app.components.PetTextField(
+        com.petcare.app.components.PetTextField(
+            modifier = Modifier.testTag("pet_age_field"),
             text = petAge,
             title = "Age",
             keyboardType = KeyboardType.Number,
             onTextChange = { petAge = it })
 
-        _root_ide_package_.com.petcare.app.components.PetButton(
+        com.petcare.app.components.PetButton(
+            modifier = Modifier.testTag("add_pet_submit_button"),
             title = "Add Pet",
             color = MaterialTheme.colorScheme.primary,
             onClicked = {
@@ -132,7 +144,8 @@ internal fun AddNewPetScreen(
             }
         )
 
-        _root_ide_package_.com.petcare.app.components.PetButton(
+        com.petcare.app.components.PetButton(
+            modifier = Modifier.testTag("add_pet_close_button"),
             title = "Close",
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             onClicked = { onCloseClicked() }

@@ -73,6 +73,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.petcare.app.R
@@ -375,7 +380,7 @@ private fun Content(
 
                 if (isColumn) {
                     LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize().testTag("pet_list_lazy_column"),
                         state = rememberLazyListState()
                     ) {
                         items(items = pets, key = { it.id }) { pet ->
@@ -391,7 +396,7 @@ private fun Content(
                 } else {
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize().testTag("pet_grid_lazy_vertical_grid"),
                         contentPadding = PaddingValues(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -417,7 +422,8 @@ private fun Content(
             AddNewPetButton(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(bottom = 32.dp, end = 16.dp),
+                    .padding(bottom = 32.dp, end = 16.dp)
+                    .testTag("add_pet_button"),
                 onClick = addNewPetClicked
             )
         }
@@ -430,7 +436,7 @@ private fun LazyItemScope.AnimatedPetListItem(
     pet: Pet,
     onRemoveClicked: () -> Unit,
     onClick: () -> Unit,
-    onOpenDetails: () -> Unit, // 👈 Змінили onShare на onOpenDetails
+    onOpenDetails: () -> Unit,
     onDelete: () -> Unit,
 ) {
     var visible by remember { mutableStateOf(false) }
@@ -489,10 +495,12 @@ private fun LazyItemScope.AnimatedPetListItem(
                     animal = pet,
                     onRemoveClicked = onRemoveClicked,
                     onFavoriteClicked = null,
-                    modifier = Modifier.combinedClickable(
-                        onClick = onClick,
-                        onLongClick = { showContextMenu = true }
-                    )
+                    modifier = Modifier
+                        .testTag("pet_item_${pet.id}")
+                        .combinedClickable(
+                            onClick = onClick,
+                            onLongClick = { showContextMenu = true }
+                        )
                 )
             }
 
@@ -586,7 +594,14 @@ private fun AddNewPetButton(modifier: Modifier = Modifier, onClick: () -> Unit) 
         modifier = modifier
             .size(48.dp)
             .background(MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(24.dp))
-            .clickable { onClick() },
+            .clickable(
+                onClick = onClick,
+                role = Role.Button,
+                onClickLabel = "Add new pet"
+            )
+            .semantics {
+                contentDescription = "Add new pet"
+            },
         contentAlignment = Alignment.Center,
     ) {
         Image(
@@ -594,7 +609,7 @@ private fun AddNewPetButton(modifier: Modifier = Modifier, onClick: () -> Unit) 
                 .size(24.dp)
                 .padding(5.dp),
             painter = painterResource(R.drawable.ic_add),
-            contentDescription = null,
+            contentDescription = null, // decorative as the Box has the description
             contentScale = ContentScale.Fit,
         )
     }

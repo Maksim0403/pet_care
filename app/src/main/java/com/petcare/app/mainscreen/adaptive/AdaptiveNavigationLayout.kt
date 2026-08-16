@@ -63,7 +63,7 @@ fun AdaptiveNavigationLayout(
             modifier = Modifier.padding(innerPadding),
             onPetAdded = { pet ->
                 lifecycleScope.launch {
-                    PetRepository.addPet(pet)
+                    com.petcare.app.data.MockPetRepository.addPet(pet)
                 }
             },
             settingsDataStore = settingsDataStore,

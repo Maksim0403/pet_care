@@ -21,14 +21,7 @@ import com.petcare.app.R
 import com.petcare.app.ui.theme.ColorPrimary
 import com.petcare.app.ui.theme.ColorPrimaryLight
 
-/**
- * Sealed class що описує джерело зображення для [PetImage].
- *
- * Використання:
- *   PetImageSource.Res(R.drawable.my_cat)   — з drawable
- *   PetImageSource.CameraUri(uri)            — з камери / файлу
- *   PetImageSource.Default                   — заглушка за замовчуванням
- */
+
 sealed class PetImageSource {
     data class Res(@DrawableRes val resId: Int) : PetImageSource()
     data class CameraUri(val uri: Uri) : PetImageSource()
@@ -39,19 +32,18 @@ sealed class PetImageSource {
 fun PetImage(
     modifier: Modifier = Modifier,
     source: PetImageSource = PetImageSource.Default,
-    size: Int = 350
+    size: Int = 350,
+    contentDescription: String? = null
 ) {
     Box(
         modifier = modifier.size(size.dp),
         contentAlignment = Alignment.Center
     ) {
-        // Outer light circle
         Box(
             modifier = Modifier
                 .size((size * 0.98f).dp)
                 .background(color = ColorPrimaryLight, shape = CircleShape)
         )
-        // Inner primary circle
         when (source) {
             // Uri з камери — використовуємо Coil AsyncImage
             is PetImageSource.CameraUri -> Box(
@@ -61,7 +53,7 @@ fun PetImage(
             ) {
                 AsyncImage(
                     model = source.uri,
-                    contentDescription = null,
+                    contentDescription = contentDescription,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxSize()
@@ -69,7 +61,6 @@ fun PetImage(
                 )
             }
 
-            // Drawable res id
             is PetImageSource.Res ->
                 Box(
                     modifier = Modifier
@@ -78,7 +69,7 @@ fun PetImage(
                 ) {
                     Image(
                         painter = painterResource(id = if (source.resId != 0) source.resId else R.drawable.cat_default),
-                        contentDescription = null,
+                        contentDescription = contentDescription,
                         modifier = Modifier
                             .size((size * 0.65f).dp)
                     )
@@ -93,7 +84,7 @@ fun PetImage(
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.cat_default),
-                    contentDescription = null,
+                    contentDescription = contentDescription,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size((size * 0.65f).dp)

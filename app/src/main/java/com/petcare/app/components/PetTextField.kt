@@ -17,6 +17,7 @@ import com.petcare.app.ui.theme.ButtonDisabledColor
 
 @Composable
 internal fun PetTextField(
+    modifier: Modifier = Modifier,
     text: String,
     title: String,
     keyboardType: KeyboardType = KeyboardType.Text,
@@ -26,7 +27,7 @@ internal fun PetTextField(
         value = text,
         onValueChange = { onTextChange(it) },
         label = { Text(title) },
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(top = 16.dp),
 
@@ -50,8 +51,8 @@ internal fun PetTextField(
     )
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun PetTextFieldPreview() {
-    PetTextField("text", "title", keyboardType = KeyboardType.Text, {})
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun PetTextFieldPreview() {
+//    PetTextField("text", "title", keyboardType = KeyboardType.Text, {})
+//}
