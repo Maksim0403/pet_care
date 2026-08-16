@@ -77,8 +77,3 @@ android {
 | Main Screen (Pet List) | Add Pet Form | Pet Profile |
 | :---: | :---: | :---: |
 | ![Main Screen](screenshots/main_screen.jpg) | ![Add Pet Form](screenshots/add_form.jpg) | ![Pet Profile](screenshots/pet_profile.jpg) |
-
-![Main Screen (Pet List)](screenshots/list.png)
-![Add Pet Form](screenshots/add_pet.png)
-![Pet Profile](screenshots/profile.png)
--->
